@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>NAVINCLUD</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header class="drag-handle" style="cursor: move; -webkit-app-region: drag;">
+      <h2 class="app-title">NAVINCLUD</h2>
+      <p class="app-tagline">Acessibilidade Cromática</p>
+    </header>
+
+    <div style="text-align:center; margin-bottom: 12px;">
+      <button id="openCalibrate" class="wizard-btn" style="margin-bottom: 8px;">🎨 CALIBRAR MONITOR</button>
+      <button id="openWizard" class="wizard-btn">⚡ INICIAR TESTE</button>
+    </div>
+
+    <div class="control-group">
+      <label>Tipo de Filtro</label>
+      <select id="daltonismType">
+        <option value="none">Sem filtro</option>
+        <option value="protanopia">Protanopia</option>
+        <option value="protanomaly">Protanomalia</option>
+        <option value="deuteranopia">Deuteranopia</option>
+        <option value="deuteranomaly">Deuteranomalia</option>
+        <option value="tritanopia">Tritanopia</option>
+        <option value="tritanomaly">Tritanomalia</option>
+        <option value="achromatopsia">Acromatopsia</option>
+        <option value="custom">Personalizado</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label>Intensidade <span id="intensityValue" class="slider-value">100%</span></label>
+      <input type="range" id="intensitySlider" min="0" max="150" value="100">
+    </div>
+
+    <div class="control-group">
+      <label>Ajuste de Shift <span id="shiftValue" class="slider-value">0.50</span></label>
+      <input type="range" id="shiftSlider" min="0" max="100" value="50">
+    </div>
+
+    <label class="toggle-row">
+      <span class="toggle-text"><span class="toggle-title">Filtro Ativado</span></span>
+      <span class="toggle-switch">
+        <input type="checkbox" id="toggleFilter">
+        <span class="toggle-slider"></span>
+      </span>
+    </label>
+
+    <div style="text-align:center; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;">
+      <button id="exportResults" class="wizard-btn" style="width: 100%;">📥 EXPORTAR TODOS OS TESTES</button>
+    </div>
+
+    <div id="test-active-section" style="display:none; margin-top: 12px; border-top: 1px solid #ddd; padding-top: 12px;">
+      <div style="text-align: center; margin-bottom: 8px;">
+        <span style="font-weight: bold; color: #0072b2;">Em Teste: </span>
+        <span id="timer-display" style="font-size: 18px; font-weight: bold;">02:00</span>
+      </div>
+      <button id="exitTestBtn" class="wizard-btn" style="width: 100%; margin-top: 8px; background: #dc3545;">SAIR DO TESTE</button>
+    </div>
+  </script>
+  <script src="popup.js"></script>
+</body>
+</html>
