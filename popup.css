@@ -1,0 +1,234 @@
+/*
+  Paleta amigável a daltonismo (inspirada em escalas tipo Wong/Tol):
+  - Azul #0072B2 e laranja #D55E00: bem separáveis nas formas mais comuns de deficit de vermelho/verde.
+  - Texto preto sobre branco: alto contraste de luminância (inclui acromatopsia).
+  - Estados OFF com borda escura visível, nao apenas cinza "sem cor".
+*/
+:root {
+  --ni-bg-outer: #e8e8e8;
+  --ni-surface: #ffffff;
+  --ni-text: #000000;
+  --ni-text-muted: #333333;
+  --ni-accent: #0072b2;
+  --ni-accent-hover: #005a8f;
+  --ni-accent2: #d55e00;
+  --ni-accent2-on: #b54d00;
+  --ni-border: #000000;
+  --ni-toggle-off: #b3b3b3;
+  --ni-focus: #000000;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 228px;
+  margin: 0;
+  padding: 9px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--ni-text);
+  background-color: var(--ni-bg-outer);
+}
+
+.container {
+  background: var(--ni-surface);
+  border-radius: 8px;
+  padding: 11px 12px 12px;
+  border: 2px solid var(--ni-border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.drag-handle {
+  cursor: grab;
+  user-select: none;
+  margin: -2px -4px 8px;
+  padding: 6px 4px 8px;
+  border-bottom: 2px solid var(--ni-text);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.app-title {
+  margin: 0 0 2px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ni-accent);
+  letter-spacing: 0.02em;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.app-tagline {
+  margin: 0;
+  font-size: 10px;
+  text-align: center;
+  color: var(--ni-text-muted);
+  font-weight: 600;
+}
+
+.control-group {
+  margin-bottom: 9px;
+}
+
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ni-text);
+  margin-bottom: 3px;
+}
+
+select,
+input[type="range"] {
+  width: 100%;
+}
+
+select {
+  font-size: 11px;
+  padding: 4px 5px;
+  border: 2px solid var(--ni-border);
+  border-radius: 4px;
+  background: var(--ni-surface);
+  color: var(--ni-text);
+}
+
+select:focus,
+input[type="range"]:focus,
+button:focus,
+.toggle-switch input:focus + .toggle-slider {
+  outline: 2px solid var(--ni-focus);
+  outline-offset: 2px;
+}
+
+input[type="range"] {
+  height: 6px;
+  accent-color: var(--ni-accent);
+}
+
+.slider-value {
+  float: right;
+  font-weight: 800;
+  color: var(--ni-accent2);
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 6px 0;
+  border-top: 1px solid var(--ni-border);
+  cursor: pointer;
+}
+
+.toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.toggle-title {
+  font-weight: 800;
+  font-size: 11px;
+  color: var(--ni-text);
+}
+
+.toggle-desc {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--ni-text-muted);
+}
+
+.toggle-switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 40px;
+  height: 22px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--ni-toggle-off);
+  border: 2px solid var(--ni-border);
+  transition: background-color 0.2s, border-color 0.2s;
+  border-radius: 22px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 2px;
+  background-color: var(--ni-surface);
+  border: 1px solid var(--ni-border);
+  transition: transform 0.2s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: var(--ni-accent);
+  border-color: var(--ni-border);
+}
+
+input:checked + .toggle-slider.toggle-slider--accent2 {
+  background-color: var(--ni-accent2);
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(18px);
+}
+
+.main-btn {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 6px;
+  background-color: var(--ni-accent);
+  color: var(--ni-surface);
+  border: 2px solid var(--ni-border);
+  border-radius: 5px;
+  font-weight: 800;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.main-btn:hover {
+  background-color: var(--ni-accent-hover);
+}
+
+.reset-btn {
+  width: 100%;
+  padding: 6px 10px;
+  margin-top: 6px;
+  background: var(--ni-surface);
+  color: var(--ni-text);
+  border: 2px solid var(--ni-accent2);
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.reset-btn:hover {
+  background-color: #fff4e6;
+}

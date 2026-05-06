@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>NAVINCLUD - Calibração de Monitor</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; background: #fff; color: #333; }
+    h1 { color: #0072b2; border-bottom: 2px solid #0072b2; padding-bottom: 10px; }
+    .instruction-box { background: #f0f8ff; border-left: 4px solid #0072b2; padding: 15px; margin: 20px 0; }
+    .test-section { margin: 30px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+    h2 { color: #333; margin-top: 0; }
+    .grayscale { display: flex; height: 40px; margin: 10px 0; }
+    .grayscale div { flex: 1; display: flex; align-items: center; justify-content: center; color: #000; font-size: 12px; border: 1px solid #999; }
+    .color-bars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 10px 0; }
+    .color-bar { height: 60px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; border: 1px solid #333; }
+    .low-contrast { margin: 15px 0; padding: 10px; }
+    .lc1 { background: #ccc; color: #333; }
+    .lc2 { background: #333; color: #ccc; }
+    .small-text { font-size: 10px; margin: 15px 0; line-height: 1.4; }
+    .validation { background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .btn { display: inline-block; padding: 12px 24px; background: #0072b2; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px; cursor: pointer; border: none; font-size: 16px; }
+    .btn:hover { background: #005a8c; }
+  </style>
+</head>
+<body>
+  <h1>NAVINCLUD - Calibração de Monitor</h1>
+  
+  <div class="instruction-box">
+    <p><strong>Instruções obrigatórias antes de iniciar o teste:</strong></p>
+    <ol>
+      <li>Ajuste a <strong>temperatura de cor (ponto branco)</strong> do monitor para <strong>D65 (6500K)</strong> usando o menu do monitor.</li>
+      <li>Ajuste a <strong>gama (gamma)</strong> para <strong>2.2</strong> (padrão sRGB).</li>
+      <li>Defina a <strong>luminância</strong> para <strong>80–120 cd/m²</strong> (brilho médio).</li>
+      <li>Desative modos dinâmicos: brilho automático, contraste dinâmico, modo noturno e economia de energia.</li>
+      <li>Restaure as configurações de fábrica se necessário e ajuste os parâmetros acima.</li>
+    </ol>
+    <p><em>Esses ajustes garantem rigor científico e validade ao teste de Ishihara digital.</em></p>
+  </div>
+
+  <div class="test-section">
+    <h2>Teste 1: Rampa de Escala de Cinza (0–255)</h2>
+    <p>Todos os 10 níveis abaixo devem estar claramente visíveis e distintos:</p>
+    <div class="grayscale">
+      <div style="background: rgb(0,0,0); color: white;">0</div>
+      <div style="background: rgb(28,28,28);">28</div>
+      <div style="background: rgb(56,56,56);">56</div>
+      <div style="background: rgb(85,85,85);">85</div>
+      <div style="background: rgb(113,113,113);">113</div>
+      <div style="background: rgb(141,141,141);">141</div>
+      <div style="background: rgb(170,170,170);">170</div>
+      <div style="background: rgb(198,198,198);">198</div>
+      <div style="background: rgb(226,226,226);">226</div>
+      <div style="background: rgb(255,255,255);">255</div>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Teste 2: Barras de Cores Primárias</h2>
+    <p>Cada barra deve mostrar sua cor correspondente e a legenda em branco deve ser legível:</p>
+    <div class="color-bars">
+      <div class="color-bar" style="background: rgb(255,0,0);">Vermelho (R)</div>
+      <div class="color-bar" style="background: rgb(0,255,0); color: #333;">Verde (G)</div>
+      <div class="color-bar" style="background: rgb(0,0,255);">Azul (B)</div>
+      <div class="color-bar" style="background: rgb(255,255,0); color: #333;">Amarelo (Y)</div>
+      <div class="color-bar" style="background: rgb(255,0,255);">Magenta (M)</div>
+      <div class="color-bar" style="background: rgb(0,255,255); color: #333;">Ciano (C)</div>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Teste 3: Textos de Baixo Contraste</h2>
+    <div class="low-contrast lc1">Texto cinza escuro (#333) em fundo cinza claro (#ccc) - deve ser legível.</div>
+    <div class="low-contrast lc2">Texto cinza claro (#ccc) em fundo cinza escuro (#333) - deve ser legível.</div>
+  </div>
+
+  <div class="test-section">
+    <h2>Teste 4: Texto Pequeno (10px)</h2>
+    <p class="small-text">Este é um texto de 10 pixels. Ele deve ser perfeitamente legível para garantir que a resolução e nitidez do monitor estão adequadas para o teste.</p>
+  </div>
+
+  <div class="validation">
+    <p><strong>Validação:</strong> Todos os elementos acima devem estar claramente visíveis para prosseguir. Se algum elemento estiver ilegível ou com cores distorcidas, recalibre o monitor antes de iniciar o teste.</p>
+  </div>
+
+  <button id="calibrate-next-btn" class="btn">Próximo: Iniciar Teste</button>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('calibrate-next-btn').addEventListener('click', function() {
+        window.location.href = 'wizard.html';
+      });
+    });
+  </script>
+</body>
+</html>
