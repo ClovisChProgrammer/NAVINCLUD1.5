@@ -3,7 +3,7 @@
   "name": "NAVINCLUD - Acessibilidade Cromática",
   "version": "1.3",
   "description": "Filtros dinâmicos para Daltonismo e Acromatopsia.",
-  "permissions": ["storage", "activeTab", "scripting", "tabs"],
+  "permissions": ["storage", "activeTab", "scripting", "tabs", "downloads"],
   "icons": {
     "48": "icon48.png"
   },

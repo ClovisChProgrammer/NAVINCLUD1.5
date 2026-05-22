@@ -94,6 +94,13 @@ document.addEventListener('DOMContentLoaded', function() {
     PLATES.forEach(function(p) { scorePoints[p.type] = 0; });
     testPerception = [];
     currentTestEntry = null;
+    preTestData = { sexo: '', idade: '', turma: '' };
+    var sexoEl = document.getElementById('preSexo');
+    var idadeEl = document.getElementById('preIdade');
+    var turmaEl = document.getElementById('preTurma');
+    if (sexoEl) sexoEl.value = '';
+    if (idadeEl) idadeEl.value = '';
+    if (turmaEl) turmaEl.value = '';
     if (progressFill) progressFill.style.width = '0%';
   }
 
@@ -399,5 +406,19 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       setTimeout(function() { window.close(); }, 300);
     });
+  };
+
+  document.getElementById('recalibrate-btn').onclick = function() {
+    chrome.windows.create({ url: 'calibrate.html', type: 'popup', width: 800, height: 700 }, function() {
+      chrome.windows.getCurrent(function(win) {
+        if (win && win.id) { chrome.windows.remove(win.id); }
+      });
+    });
+  };
+
+  document.getElementById('retake-test-btn').onclick = function() {
+    resetTestState();
+    document.getElementById('results-screen').classList.remove('active');
+    document.getElementById('pre-test-screen').classList.add('active');
   };
 });

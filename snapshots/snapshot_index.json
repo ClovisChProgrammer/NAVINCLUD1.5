@@ -31,6 +31,13 @@
         "manifest.json",
         "wizard.js"
       ]
+    },
+    {
+      "id": 2,
+      "timestamp": "2026-05-21 22:58:23",
+      "commit_hash": "[main 44c61ff] [SNAPSHOT] 2026-05-21 22:58:23 | MARCO: snapshot.py + AGENTS.md implantados. 7 filtros, slides, toggle, placas funcionando.\n 1 file changed, 36 insertions(+)\n create mode 100644 snapshots/snapshot_index.json",
+      "message": "MARCO: snapshot.py + AGENTS.md implantados. 7 filtros, slides, toggle, placas funcionando.",
+      "modified_files": []
     }
   ]
 }

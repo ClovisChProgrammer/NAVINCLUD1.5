@@ -51,7 +51,46 @@
     </label>
 
     <div style="text-align:center; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;">
-      <button id="exportResults" class="wizard-btn" style="width: 100%;">📥 EXPORTAR TODOS OS TESTES</button>
+      <div id="test-counter" style="margin-bottom:10px; font-size:13px; font-weight:bold; color:#333;">
+        Testes realizados: <span id="testCountDisplay">0</span>
+      </div>
+
+      <button id="exportStart" class="wizard-btn" style="width:100%;">📥 EXPORTAR TODOS OS TESTES</button>
+
+      <div id="exportConfirm1" style="display:none;">
+        <p style="font-weight:bold;color:#d55e00;text-align:center;font-size:11px;">ATENÇÃO: VOCÊ CONFIRMA A EXTRAÇÃO DOS TESTES?</p>
+        <div style="display:flex; gap:4%;">
+          <button id="exportYes" class="wizard-btn" style="width:48%;">SIM</button>
+          <button id="exportNo" class="wizard-btn" style="width:48%;background:#666;">NÃO</button>
+        </div>
+      </div>
+
+      <div id="exportConfirm2" style="display:none;">
+        <p style="text-align:center;font-size:11px;margin:8px 0;">Digite <strong>CONFIRMO</strong> para prosseguir:</p>
+        <input type="text" id="confirmInput" style="width:100%;padding:4px;border:2px solid #000;border-radius:4px;box-sizing:border-box;">
+        <div style="display:flex; gap:4%; margin-top:8px;">
+          <button id="confirmBtn" class="wizard-btn" style="width:48%;">CONFIRMO</button>
+          <button id="cancelBtn" class="wizard-btn" style="width:48%;background:#666;">CANCELAR</button>
+        </div>
+      </div>
+
+      <div id="exportNameInput" style="display:none;">
+        <p style="text-align:center;font-size:11px;margin:8px 0;">Informe seu nome:</p>
+        <input type="text" id="userNameInput" style="width:100%;padding:4px;border:2px solid #000;border-radius:4px;box-sizing:border-box;">
+        <div style="display:flex; gap:4%; margin-top:8px;">
+          <button id="proceedExportBtn" class="wizard-btn" style="width:48%;">EXPORTAR</button>
+          <button id="cancelExportBtn" class="wizard-btn" style="width:48%;background:#666;">CANCELAR</button>
+        </div>
+      </div>
+
+      <div id="exportResult" style="display:none;">
+        <p id="exportResultMsg" style="text-align:center;font-size:11px;"></p>
+        <p style="text-align:center;font-size:11px;font-weight:bold;margin:8px 0;">Zerar o contador de testes?</p>
+        <div style="display:flex; gap:4%;">
+          <button id="zeroYesBtn" class="wizard-btn" style="width:48%;">SIM</button>
+          <button id="zeroNoBtn" class="wizard-btn" style="width:48%;background:#666;">NÃO</button>
+        </div>
+      </div>
     </div>
 
     <div id="test-active-section" style="display:none; margin-top: 12px; border-top: 1px solid #ddd; padding-top: 12px;">
@@ -61,7 +100,6 @@
       </div>
       <button id="exitTestBtn" class="wizard-btn" style="width: 100%; margin-top: 8px; background: #dc3545;">SAIR DO TESTE</button>
     </div>
-  </script>
   <script src="popup.js"></script>
 </body>
 </html>
