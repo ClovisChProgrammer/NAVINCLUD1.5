@@ -1,0 +1,51 @@
+NAVINCLUD — registro de portos seguros
+=====================================
+
+Como restaurar (Git)
+--------------------
+  git tag -l "porto-seguro-*"
+  git checkout porto-seguro-AAAA-MM-DD-<slug>
+  (ou criar ramo: git checkout -b recuperacao-<slug> porto-seguro-...)
+
+Como gravar um novo porto seguro após melhoria
+----------------------------------------------
+  1. Confirme que a extensão está como deseja (teste manual rápido).
+  2. git add -A
+  3. git commit -m "Porto seguro: <resumo curto da mudança>"
+  4. git tag -a porto-seguro-AAAA-MM-DD-<slug> -m "Porto seguro: <mesmo resumo>"
+  5. Acrescente uma linha neste arquivo (seção Entradas).
+
+Observação: opacidade não faz parte do projeto; controles relevantes são
+intensidade e shift (validados manualmente em vários sites, incl. YouTube).
+
+---
+Entradas
+---
+
+2026-04-02 | baseline-pós-testes-manuais | Intensidade e shift OK em testes manuais em diversos sites (incl. YouTube). UI sem opacidade. Estado dos fontes: content.js, popup.html, popup.js modificados em relação ao primeiro commit; alinhar commit/tag local quando conveniente.
+
+2026-04-02 | ui-compacta-paleta-daltonismo-fixar | Popup ~24% mais estreito (228px), CSS com paleta alto contraste (azul #0072B2 + laranja #D55E00 + preto/branco). Novo flag fixar: desligado = cores normais em todas as abas; ligado + filtro ativado = correção global. broadcastApply em todas as abas http(s). background default: intensity + fixar. Arquivos: popup.html/css/js, content.js, background.js.
+
+2026-04-02 | sliders-zero-toggles-janela-arrastavel | Correcao: intensidade/shift em 0 nao eram persistidos (|| 100 / || 0.5 e shift load com || 0.5). Toggles: label envolve texto+switch para clique em toda a linha. Painel abre via chrome.windows.create (sem default_popup), permissao windows; arrastar pelo cabecalho com chrome.windows.update; fechar ao focar outra janela ou NONE. content.js: clamp 0-1. manifest 1.2.1.
+
+2026-04-02 | semantica-fixar-vs-filtro | Fixar: so controla aplicacao automatica em carga nova (source init); desligar Fixar nao remove filtro da aba atual (sem broadcast). Filtro ativado off: remove em todas as abas (broadcast). Mensagens do painel usam source message; loadInitial e tabs.onUpdated usam source init.
+
+2026-04-02 | consolidado-validado-usuario | Marco consolidado apos testes manuais OK pelo usuario. Reune: UI compacta (largura ~228px), paleta alto contraste; Fixar (propagacao automatica em cargas novas via source init) vs Filtro ativado (efeito global em todas as abas); correcao sliders em 0 e carga de shift 0; painel em janela chrome.windows com arrasto pelo cabecalho e fecho ao mudar foco; permissao windows; manifest 1.2.1; defaults background com intensity e fixar; porto-seguro.log atualizado.
+
+---
+Mensagem de commit sugerida (copiar para git commit)
+---
+
+Titulo curto (primeira linha do commit):
+
+NAVINCLUD v1.2.1: UI, painel em janela, Fixar/Filtro e correcao dos sliders
+
+Corpo (detalhes, linhas seguintes):
+
+- Popup mais compacto com paleta de alto contraste (azul #0072B2, laranja #D55E00, preto/branco) para melhor distincao em diversos tipos de daltonismo.
+- Controles Fixar (aplicacao automatica em novas paginas/recargas via source init) e Filtro ativado (liga/desliga o filtro em todas as abas http(s) via broadcast).
+- Desligar Fixar nao remove o filtro da aba atual; broadcast ao voltar a ligar o Fixar para alinhar abas.
+- Correcao dos valores 0 em intensidade e shift (evitar || 100 e || 0.5) e carga correta de shift 0; clamp 0-1 no content.js.
+- Painel aberto por chrome.windows.create (sem default_popup); permissao windows; arrastar pelo cabecalho com chrome.windows.update; fechar painel ao focar outra janela.
+- Toggles com label em toda a linha para clique no texto; background envia applyNavInclud com source init; popup com source message.
+- manifest.json versao 1.2.1; defaults em onInstalled com intensity e fixar; registro em porto-seguro.log.

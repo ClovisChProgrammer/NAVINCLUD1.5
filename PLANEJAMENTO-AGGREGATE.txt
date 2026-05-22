@@ -1,0 +1,389 @@
+================================================================================
+PLANEJAMENTO - GUI NAVINCLUD (aggregate_results.py)
+Arquivo: gui_navinclud.py | field_discovery.py | nav_data.py
+Criado em: 2026-05-15 | Última atualização: 2026-05-16 (sessão completa)
+================================================================================
+
+Este documento contém TODO o histórico da sessão de planejamento e
+implementação entre o dev (opencode) e o usuário, incluindo análises,
+descobertas de bugs, decisões tomadas e estado atual do projeto.
+Serve como "memória persistente" para recarregar o contexto após
+reinicialização do computador.
+
+================================================================================
+SUMÁRIO DA SESSÃO (2026-05-16)
+================================================================================
+
+1.  Leitura inicial do PLANEJAMENTO-AGGREGATE.TXT + repositório
+2.  Primeiro plano: GUI para substituir aggregate_results.py
+3.  Reanálise #1: pontos obscuros, cegos e incertos (ajuste fino)
+4.  Respostas do usuário às questões pendentes
+5.  Reanálise #2: cascata de bugs wizard.js -> content.js -> popup.js
+6.  Implementação das correções + criação da GUI
+7.  Problema com __pycache__ impedindo carga da extensão Chrome
+8.  Relato de "extensão funcionando mau" - análise e diagnóstico
+9.  Decisão: salvar toda a sessão neste arquivo antes de reiniciar
+
+================================================================================
+PARTE 1: DADOS DE REFERÊNCIA (navinclud_10_testes_2026-05-16T00-56-10.json)
+================================================================================
+
+Arquivo com 10 registros reais de teste, localizado na raiz e em 00TESTES/.
+
+SCHEMA COMPLETO (40 campos únicos em dot-notation):
+
+  Pré-Teste (sempre presente):
+    preTest.idade             (int, 17-34)
+    preTest.sexo              (str, Masculino/Feminino)
+    preTest.turma             (str, 1a/1b/2a/2b/2c/3a/3c)
+
+  Metadados (sempre presente):
+    terminalId                (str, ex: navinclud-e49054d0)
+    testId                    (str, UUID)
+    timestamp                 (str, ISO datetime)
+
+  Resultados (sempre presente):
+    testResults.avgReactionTimeMs     (int, 1598-3411)
+    testResults.controlPlateErrors    (bool, sempre false - constante)
+    testResults.correctCount          (int, 14-18)
+    testResults.correctPercent        (float, 77.78-100)
+    testResults.detectedDefect        (str, vide abaixo)
+    testResults.totalPlates           (int, sempre 18 - constante)
+    testResults.errorsByType.*        (9 ints, 0-2 cada)
+    testResults.scorePointsByType.*   (9 floats, 0-2 cada)
+    testResults.testPerception        (array de strings)
+
+  Filtro Aplicado (opcional - só em <90% de acerto):
+    appliedFilter.enabled     (bool, sempre true)
+    appliedFilter.intensity   (int, 80 ou 100)
+    appliedFilter.shift       (float, 0.5 ou 0.6)
+    appliedFilter.type        (str)
+
+  Pós-Teste (condicional, mutuamente exclusivo):
+    normalPostTest.alreadyTaken       (str, Sim/Nao, só nos >=90%)
+    experiencePostTest.visualImprovement  (str, Sim, só nos <90%)
+    experiencePostTest.navigationEase     (str)
+    experiencePostTest.wouldRecommend     (str)
+    experiencePostTest.comfortLevel       (str)
+
+  Campos derivados (adicionados pelo NavData):
+    _source_file              (str, nome do arquivo JSON)
+    _source_dir               (str, diretório de origem)
+
+VALORES DE detectedDefect (com typos originais):
+  "deutanopia", "protanomaly", "tritanomaly", "achromaopia", "none"
+
+PADRÕES DE CO-OCORRÊNCIA:
+  - correctPercent >= 90% -> normalPostTest (5 registros)
+  - correctPercent < 90%  -> appliedFilter + experiencePostTest (5 registros)
+  - Exceção: registro 8 tem correctPercent=94.44% + detectedDefect=tritanomaly
+    (normalPostTest mesmo com defeito, porque >=90%)
+
+================================================================================
+PARTE 2: ESQUEMA DE TIPOS DOS CAMPOS
+================================================================================
+
+  Categóricos (contagem, barras, pizza):
+    preTest.sexo, preTest.turma, testResults.detectedDefect,
+    appliedFilter.type, normalPostTest.alreadyTaken,
+    experiencePostTest.visualImprovement, navigationEase,
+    wouldRecommend, comfortLevel
+
+  Numéricos (média, histograma):
+    preTest.idade, testResults.correctCount, testResults.correctPercent,
+    testResults.avgReactionTimeMs, appliedFilter.intensity,
+    appliedFilter.shift,
+    testResults.errorsByType.* (9 campos),
+    testResults.scorePointsByType.* (9 campos)
+
+  Booleanos (contagem True/False):
+    testResults.controlPlateErrors, appliedFilter.enabled
+
+  Arrays (expandir dummy columns):
+    testResults.testPerception
+      -> valores expandidos: Facil, Dificil, Interessante, Divertido,
+         Estressante, Informativo
+
+  Constantes (ocultar da UI - sem valor analítico):
+    testResults.totalPlates (18), testResults.controlPlateErrors (false),
+    testResults.errorsByType.control (0),
+    testResults.scorePointsByType.control (2),
+    appliedFilter.enabled (true, nos que existem),
+    experiencePostTest.visualImprovement (sempre "Sim" nos que existem),
+    experiencePostTest.wouldRecommend (sempre "Sim" nos que existem)
+
+  Opcionais (presentes em <100% dos registros):
+    appliedFilter.* (5/10), experiencePostTest.* (5/10),
+    normalPostTest.alreadyTaken (5/10)
+
+================================================================================
+PARTE 3: BUGS ENCONTRADOS NA EXTENSÃO CHROME (wizard.js)
+================================================================================
+
+ARQUIVO: wizard.js (400 linhas)
+
+BUG 1 - getParentType retorna prefixo errado para deuteran (linha 49)
+  Original:  if (type.startsWith('deuteran')) return 'deutan';
+  Correto:   if (type.startsWith('deuteran')) return 'deuteran';
+  Efeito:    Ao reconstruir filterType (linha 219), 'deutan' + 'opia'
+             gera 'deutanopia' (nome errado) em vez de 'deuteranopia'.
+
+BUG 2 - getParentType retorna prefixo errado para achromat (linha 51)
+  Original:  if (type.startsWith('achroma')) return 'achroma';
+  Correto:   if (type.startsWith('achroma')) return 'achromat';
+  Efeito:    'achroma' + 'opia' = 'achromaopia' (errado)
+             em vez de 'achromat' + 'opsia' = 'achromatopsia' (correto).
+
+BUG 3 - Sufixo 'opsia' vs 'opia' para achromat (linhas 219, 225, 326-330)
+  Original:  filterType = defectType + 'opia';  (sempre)
+  Correto:   Se defectType === 'achromat', usar 'opsia'; se não, 'opia'.
+  Efeito:    'achromat' + 'opia' = 'achromatopia' (erro médico)
+             correto: 'achromatopsia'.
+
+CASCATA PARA content.js (NÃO MODIFICADO - bug pré-existente):
+  content.js:50 faz base[type] para obter matrix 3x3 do filtro.
+  Se type='deutanopia' -> base['deutanopia'] = undefined -> matriz identidade
+  -> FILTER NÃO FUNCIONA para deuteranopia (o tipo mais comum!).
+  content.js:61 faz type.includes('deuteran') -> 'deutanopia' não inclui
+  'deuteran' -> SHIFT OFFSET NULO.
+
+CASCATA PARA popup.js (NÃO MODIFICADO):
+  popup.js:17 faz elements.type.value = s.type.
+  Select em popup.html:26 tem <option value="deuteranopia">.
+  Se s.type='deutanopia', NÃO CASCA -> select fica em "Sem filtro".
+
+IMPACTO REAL: O filtro cromático NUNCA FUNCIONOU para deuteranopia
+(6% dos homens = tipo + comum) e acromatopsia. Os dados JSON gravados
+têm os nomes errados ("deutanopia", "achromaopia").
+
+================================================================================
+PARTE 4: DECISÕES DO USUÁRIO (respostas às perguntas)
+================================================================================
+
+1. Gráfico composto? -> SIM, aceito. Barras agrupadas + subplots 2x2.
+2. Correção de typos? -> Sim, exclusivamente na parte do teste -> filtro.
+   O usuário pediu para PROCURAR MAIS doenças escritas de forma errada.
+   Foram encontrados 3 bugs no wizard.js.
+3. Dados simulados (58/205)? -> Não precisa neste momento.
+4. Resolução GUI? -> 1280x720 mínimo, redimensionável pelos cantos,
+   gráficos responsivos.
+5. Mesclagem de dados? -> Prossiga com groupby unidimensional,
+   pivot 2D como melhoria futura.
+6. Google Images com pesquisa? -> Sim, abrir já com busca
+   "fotos bonitas e coloridas" (experience.js:11).
+
+================================================================================
+PARTE 5: ARQUIVOS CRIADOS/MODIFICADOS
+================================================================================
+
+ARQUIVOS MODIFICADOS:
+
+  wizard.js (3 bugs corrigidos):
+    Linha 49: 'deutan' -> 'deuteran'
+    Linha 51: 'achroma' -> 'achromat'
+    Linhas 219-229: nopiaSuffix = (defectType === 'achromat') ? 'opsia' : 'opia'
+    Linhas 328-330: detectedDefect mesma lógica
+
+  experience.js (1 melhoria):
+    Linha 11: URL do Google Images com search query
+    Antes: 'https://images.google.com'
+    Depois: 'https://www.google.com/search?tbm=isch&q=fotos+bonitas+e+coloridas'
+
+ARQUIVOS CRIADOS (dentro de gui/):
+
+  gui/requirements_gui.txt (5 linhas)
+    customtkinter >= 5.2.0
+    matplotlib >= 3.7.0
+    pandas >= 2.0.0
+    reportlab >= 4.0.0
+    Pillow >= 10.0.0
+
+  gui/field_discovery.py (155 linhas)
+    class TypoCorrector:
+      - TYPO_MAP: 'deutanopia'->'deuteranopia', 'deutanomaly'->'deuteranomaly',
+                  'achromaopia'->'achromatopsia'
+      - correct(value), correct_key(key), correct_nested(obj)
+    class FieldDiscoverer:
+      - CATEGORY_GROUPS: 7 categorias (Pre-Teste, Resultados, Erros, Pontos,
+                          Filtro Aplicado, Pos-Teste, Percepcao)
+      - flatten(obj, prefix): aplaina JSON aninhado em dot-notation
+      - discover(records): descobre dinamicamente tipos, constantes, opcionais
+      - expand_array_field(df, field): expande arrays em dummy columns 0/1
+      - get_display_name(key): nomes amigáveis em português
+
+  gui/nav_data.py (190 linhas)
+    class NavData:
+      - load_directory(directory, progress_callback): carrega JSONs,
+        valida schema (testId, timestamp, testResults, preTest),
+        filtra navinclud_*.json
+      - _rebuild_df(): aplaina registros, aplica TypoCorrector,
+        descobre campos, expande arrays
+      - get_summary_stats(): total, normais, deficientes, máquinas, média
+      - groupby_dynamic(group_fields, agg_fields): pandas groupby
+        com tratamento de tipos mistos
+      - get_chart_type_suggestion(): recomenda tipo de gráfico
+      - get_fields_by_category(): retorna CATEGORY_GROUPS
+      - get_active_field_keys(): campos que existem no DataFrame
+
+  gui/gui_navinclud.py (~520 linhas)
+    class ExportEngine:
+      - export_txt(data, group_fields, agg_fields, filepath):
+        relatório textual UTF-8-BOM com tabela formatada
+      - export_pdf(data, group_fields, agg_fields, filepath, chart_images):
+        PDF com DejaVuSans (Unicode), tabelas + gráficos PNG embedados
+      - export_pdf_with_charts(data, group_fields, agg_fields, filepath,
+                                figures): helper que renderiza figures
+                                matplotlib -> PNG -> PDF
+
+    class DashboardFrame(CTkScrollableFrame):
+      - _build_control_panel(): checkboxes por categoria com toggle,
+        combo tipo gráfico, botões Recalcular/Redesenhar/Exportar
+      - _build_summary_cards(): 5 cards coloridos (Total, Normais,
+        Deficientes, Máquinas, Média)
+      - _build_tab_view(): CTkTabview com Tabela (Treeview), Barras,
+        Pizza, Histograma, Composto (subplots 2x2)
+      - _on_recalculate(): groupby + display table + redraw charts
+      - _on_redraw(): desenha gráfico conforme tipo selecionado
+      - _on_export(): diálogo TXT/PDF/Ambos
+
+    class NavincludApp(CTk):
+      - TELA 1: Boas-Vindas com título + botão Iniciar
+      - TELA 2: Seleção de diretório + progresso em thread
+      - TELA 3: Menu com 3 cartões
+      - TELA 4: DashboardFrame (dinâmico com field discovery)
+      - TELA 5: Exportação TXT/PDF
+      - Responsivo: minsize 1280x720, resizable True,
+        grid weights configurados
+
+================================================================================
+PARTE 6: ESTRUTURA DE DIRETÓRIOS ATUAL
+================================================================================
+
+/
+├── gui/                          # NOVO - GUI Python
+│   ├── gui_navinclud.py          # Aplicação principal
+│   ├── nav_data.py               # Carregamento + agregação
+│   ├── field_discovery.py        # Descoberta de campos + typo corrector
+│   └── requirements_gui.txt      # Dependências
+├── wizard.js                     # MODIFICADO - 3 bugs corrigidos
+├── experience.js                 # MODIFICADO - search query
+├── aggregate_results.py          # Original - mantido
+├── main.py                       # Original - geração de placas
+├── validate_plates.py            # Original
+├── simulate_58.py                # Original - ignorar (instrução do usuário)
+├── simulate_205.py               # Original - ignorar (instrução do usuário)
+├── popup.html, popup.js          # Originais - não modificados
+├── content.js, background.js     # Originais - não modificados
+├── calibrate.html, calibrate.js  # Originais - não modificados
+├── manifest.json                 # Original
+├── navinclud_10_testes_2026-05-16T00-56-10.json  # Dados de referência
+├── 00TESTES/                     # Cópia dos dados
+│   └── navinclud_10_testes_2026-05-16T00-56-10.json
+├── simulacao_58/                 # 58 JSONs (dados, ignorar scripts)
+├── simulacao_205/                # 205 JSONs (dados, ignorar scripts)
+└── images/                       # Placas Ishihara
+
+================================================================================
+PARTE 7: ESTADO ATUAL E PROBLEMAS PENDENTES
+================================================================================
+
+PROBLEMA RELATADO: "Extensão funcionando mau após as modificações"
+  - Slidebar INTENSIDADE não responde direito
+  - Ajuste do Shift também
+  - Filtros não funcionam corretamente
+
+ANÁLISE REALIZADA EM 2026-05-16:
+  - popup.js e popup.html NÃO foram modificados (código original intacto)
+  - wizard.js teve 3 bugs corrigidos (apenas nomes de doenças)
+  - Os sliders são controlados exclusivamente por popup.js (linhas 17-22, 25-43)
+  - Nenhuma modificação minha afeta o comportamento dos sliders
+
+DIAGNÓSTICO MAIS PROVÁVEL:
+  1. Cache do Chrome corrompido pela presença de __pycache__ durante
+     a primeira tentativa de carregamento da extensão
+  2. chrome.storage.local contém dados com nomes de doenças errados
+     (pré-correção) que podem estar causando inconsistência
+  3. Solução: recarregar extensão após reiniciar computador
+
+RESOLUÇÃO IMEDIATA PARA __pycache__:
+  - Removido __pycache__/ da raiz e de gui/
+  - Arquivos Python movidos para gui/ para prevenir recriação na raiz
+  - Verificado: nenhum __pycache__ existe atualmente
+
+OBSERVAÇÃO IMPORTANTE:
+  Antes das correções, o filtro deuteranopia NUNCA funcionou (bug
+  pré-existente). Agora com names corrigidos ('deuteranopia' em vez de
+  'deutanopia'), o content.js consegue encontrar a matrix de filtro.
+  Se o usuário achar que "está diferente", pode ser porque o filtro
+  deuteranopia ESTÁ FUNCIONANDO pela primeira vez.
+
+================================================================================
+PARTE 8: DECISÕES DE IMPLEMENTAÇÃO (arquitetura)
+================================================================================
+
+1. TypoCorrector aplica correção APENAS na leitura dos dados (GUI),
+   NÃO modifica os arquivos JSON originais.
+
+2. Os bugs no wizard.js foram corrigidos NA FONTE (código do gerador),
+   então novos testes gerarão dados com nomes corretos.
+
+3. Dados históricos JSON já existentes continuam com os typos. A GUI
+   os normaliza via TypoCorrector durante a leitura.
+
+4. Groupby dinâmico separa campos em "agrupar" (categóricos) e
+   "agregar" (numéricos). Se só categóricos -> count().
+   Se só numéricos -> agg mean() sem groupby.
+
+5. Exportação TXT usa UTF-8 com BOM (compatível com Windows).
+   Exportação PDF usa DejaVuSans para acentos portugueses.
+
+6. Threading: carregamento de diretórios em threading.Thread com
+   callback para barra de progresso. UI nunca trava.
+
+7. Matplotlib usa backend TkAgg embedado via FigureCanvasTkAgg.
+
+================================================================================
+PARTE 9: QUESTÕES EM ABERTO PARA PRÓXIMA SESSÃO
+================================================================================
+
+1. Se a extensão continuar com problemas após reiniciar, investigar:
+   - chrome.storage.local.clear() para remover dados corrompidos
+   - Verificar se há conflito entre conteúdo antigo e novo no storage
+   - Testar cada tipo de daltonismo individualmente no popup
+
+2. Melhorias futuras na GUI:
+   - Pivot table 2D (linha x coluna) se necessário
+   - Cache de resultados de groupby
+   - Filtro temporal por timestamp
+   - Exportação seletiva por diretório
+
+3. Validação dos dados simulados (58 e 205 pessoas) quando/quando
+   o usuário quiser carregá-los na GUI.
+
+4. Possível refatoração: extrair as classes em módulos separados
+   para melhor manutenção (já feito com field_discovery.py e nav_data.py).
+
+================================================================================
+PARTE 10: COMANDOS ÚTEIS
+================================================================================
+
+Para iniciar a GUI:
+  cd gui
+  python gui_navinclud.py
+
+Para testar importação:
+  python -c "from nav_data import NavData; nd = NavData(); v,e = nd.load_directory('../00TESTES'); print(f'{v} validos')"
+
+Para verificar se __pycache__ está limpo:
+  Get-ChildItem -Recurse -Directory -Filter __pycache__
+
+Para instalar dependências:
+  pip install customtkinter matplotlib pandas reportlab Pillow
+
+Para limpar cache da extensão Chrome:
+  chrome://extensions -> Recarregar (Ctrl+R)
+
+================================================================================
+FIM DO PLANEJAMENTO COMPLETO
+Última atualização: 2026-05-16 às ~16:50
+================================================================================

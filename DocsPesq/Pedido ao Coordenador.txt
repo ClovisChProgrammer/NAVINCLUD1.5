@@ -1,0 +1,35 @@
+Ao Sr. Coordenador do Curso de Desenvolvimento de Sistemas Prof. Mestre
+Márcio Morais ETEC Comendador João Rays
+Assunto: Solicitação de apoio para coleta de dados e testes de usabilidade (Projeto
+de TCC)
+Prezado Professor Márcio,
+Nós, Clóvis Charlanti e Alberto Biazetti, alunos do 3° módulo de Desenvolvimento de
+Sistemas (Turma A), estamos em fase de Conclusão do nosso Trabalho de Conclusão de
+Curso (TCC). Nosso projeto, que já se encontra em fase Alfa, consiste no
+desenvolvimento de uma extensão para navegadores Chromium voltada à acessibilidade
+digital para pessoas com daltonismo.
+A relevância social deste projeto é fundamentada em dados expressivos: estima-se que
+em março de 2026 a população brasileira seja de 213.562.666 habitantes, dos quais
+aproximadamente 8.862.849 são daltônicos (cerca de 4,15% da população). A condição
+afeta drasticanente mais homens (8%) do que mulheres (0,5%), o que torna o ambiente
+acadêmico de tecnologia um campo de amostragem essencial para validação de
+ferramentas de auxílio visual.
+Além de nos ajudarem com o nosso TCC, também há o fator da curiosidade e de
+reconhecimento de um possivel problema que muitas vezes passa desapercebido do
+próprio portador por anos a fio. Este pode ser um momento de descoberta e
+autoconsciência.
+Diante disso, solicitamos autorização para:
+1. Instalação da Extensão: Disponibilização temporária da ferramenta nos
+laboratórios para testes. A ferramenta é em formato de extensão não intrusiva e de
+fácil instalação e com código aberto e não malicioso.
+2. Triagem de Voluntários: Realização de um teste rápido e anônimo de daltonismo
+Com todos os alunos presentes, usando o site colorblindness.org para fazerem um
+teste com resposta imediata através de um placar indicando quantos dos 25 testes
+a pessoa acertou. Errando de 2 em diante já indica uma leve predisposição ao
+daltonismo.
+3. Coleta de Feedback: Aplicação de formulário de experiência de uso com os alunos
+identificados como daltônicos.
+Garantimos que a participação será voluntária, anônima e sem coleta de dados
+sensíveis, tratando-se estritamente de um experimento acadêmico inofensiver
+Atenciosamente,
+Clóvis Charlanti Alberto Biazetti Alunos do 30 nS - Turma A

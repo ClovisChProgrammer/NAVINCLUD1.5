@@ -52,12 +52,26 @@ function calculateMatrix(type, intensity, shift) {
 
   const i = intensity;
   const n = 1 - i;
-  const brightness = shift; // Shift agora é brilho adicionado (0 a 1)
+
+  let rOffset = 0, gOffset = 0, bOffset = 0;
+  const shiftMagnitude = 0.2;
+  if (type.includes('protan')) {
+    gOffset = shift * shiftMagnitude;
+    bOffset = shift * shiftMagnitude;
+  } else if (type.includes('deuteran')) {
+    rOffset = shift * shiftMagnitude;
+    bOffset = shift * shiftMagnitude;
+  } else if (type.includes('tritan')) {
+    rOffset = shift * shiftMagnitude;
+    gOffset = shift * shiftMagnitude;
+  } else if (type.includes('achroma')) {
+    rOffset = gOffset = bOffset = shift * 0.15;
+  }
 
   return [
-    n + i*b[0], i*b[1], i*b[2], 0, brightness,
-    i*b[3], n + i*b[4], i*b[5], 0, brightness,
-    i*b[6], i*b[7], n + i*b[8], 0, brightness,
+    n + i*b[0], i*b[1], i*b[2], 0, rOffset,
+    i*b[3], n + i*b[4], i*b[5], 0, gOffset,
+    i*b[6], i*b[7], n + i*b[8], 0, bOffset,
     0, 0, 0, 1, 0
   ].join(', ');
 }

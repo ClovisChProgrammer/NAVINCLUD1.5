@@ -46,9 +46,9 @@ let currentTestEntry = null;
 
 function getParentType(type) {
   if (type.startsWith('protan')) return 'protan';
-  if (type.startsWith('deuteran')) return 'deutan';
+  if (type.startsWith('deuteran')) return 'deuteran';
   if (type.startsWith('tritan')) return 'tritan';
-  if (type.startsWith('achroma')) return 'achroma';
+  if (type.startsWith('achroma')) return 'achromat';
   return type;
 }
 
@@ -136,7 +136,16 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }, 1000);
 
-    plate.options.forEach(function(opt) {
+    // Randomizar ordem das opções (Fisher-Yates shuffle)
+    var shuffledOptions = plate.options.slice();
+    for (var i = shuffledOptions.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = shuffledOptions[i];
+      shuffledOptions[i] = shuffledOptions[j];
+      shuffledOptions[j] = temp;
+    }
+
+    shuffledOptions.forEach(function(opt) {
       var btn = document.createElement('button');
       btn.className = 'option-btn';
       btn.textContent = opt;
@@ -207,13 +216,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (defectTypes.length === 1) {
         var defectType = defectTypes[0];
-        var filterType = defectType + 'opia';
+        var nopiaSuffix = (defectType === 'achromat') ? 'opsia' : 'opia';
+        var filterType = defectType + nopiaSuffix;
         var intensity = 100, shift = 0.5;
 
-        var maliaErrors = errors[defectType + 'omaly'] || 0;
-        var nopiaErrors = errors[defectType + 'opia'] || 0;
+        var maliaSuffix = 'omaly';
+        var maliaErrors = errors[defectType + maliaSuffix] || 0;
+        var nopiaErrors = errors[defectType + nopiaSuffix] || 0;
         if (maliaErrors > 0 && nopiaErrors === 0) {
-          filterType = defectType + 'omaly';
+          filterType = defectType + maliaSuffix;
           intensity = 80; shift = 0.6;
         }
 
@@ -314,8 +325,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var detectedDefect = 'none';
     if (Object.keys(parentErrors).length === 1) {
       var p = Object.keys(parentErrors)[0];
+      var nopiaSuffix = (p === 'achromat') ? 'opsia' : 'opia';
       var hasOmalia = errors[p + 'omaly'] > 0;
-      detectedDefect = p + (hasOmalia ? 'omaly' : 'opia');
+      detectedDefect = p + (hasOmalia ? 'omaly' : nopiaSuffix);
     }
 
     var testEntry = {

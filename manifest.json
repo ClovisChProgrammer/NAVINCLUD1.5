@@ -22,7 +22,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["images/*.webp", "wizard.html", "calibrate.html", "experience.html"],
+      "resources": ["images/*.webp", "wizard.html", "calibrate.html", "experience.html", "calibrate.js", "experience.js"],
       "matches": ["<all_urls>"]
     }
   ]

@@ -1,0 +1,17 @@
+# Simulacao 58 pessoas - dados gerados
+simulacao_58/
+simulate_58.py
+
+# Simulacao 205 pessoas - dados gerados
+simulacao_205/
+simulate_205.py
+
+# Relatorios de simulacao
+relatorio_58_pessoas.txt
+TesteSimulado205pessoas.txt
+relatorio_corrigido.txt
+relatorio_teste.txt
+
+# Cache Python
+__pycache__/
+*.pyc

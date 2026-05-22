@@ -1,0 +1,45 @@
+[
+  {
+    "testId": "sample-1",
+    "timestamp": "2026-05-04T10:00:00Z",
+    "terminalId": "navinclud-test001",
+    "preTest": {"sexo": "Masculino", "turma": "3A"},
+    "testResults": {
+      "totalPlates": 18,
+      "correctCount": 17,
+      "correctPercent": 94.4,
+      "avgReactionTimeMs": 3200,
+      "errorsByType": {"control": 0, "protanopia": 0, "protanomaly": 0, "deuteranopia": 0, "deuteranomaly": 0, "tritanopia": 0, "tritanomaly": 0, "achromatopsia": 0, "achromatomaly": 1},
+      "scorePointsByType": {"control": 2, "protanopia": 2, "protanomaly": 2, "deuteranopia": 2, "deuteranomaly": 2, "tritanopia": 2, "tritanomaly": 2, "achromatopsia": 2, "achromatomaly": 1.5},
+      "detectedDefect": "none",
+      "controlPlateErrors": false
+    },
+    "normalPostTest": {
+      "alreadyTaken": "Não",
+      "testPerception": ["Fácil", "Interessante"]
+    }
+  },
+  {
+    "testId": "sample-2",
+    "timestamp": "2026-05-04T11:00:00Z",
+    "terminalId": "navinclud-test002",
+    "preTest": {"sexo": "Feminino", "turma": "2B"},
+    "testResults": {
+      "totalPlates": 18,
+      "correctCount": 14,
+      "correctPercent": 77.8,
+      "avgReactionTimeMs": 4500,
+      "errorsByType": {"control": 0, "protanopia": 2, "protanomaly": 0, "deuteranopia": 0, "deuteranomaly": 0, "tritanopia": 0, "tritanomaly": 0, "achromatopsia": 0, "achromatomaly": 0},
+      "scorePointsByType": {"control": 2, "protanopia": 0.5, "protanomaly": 2, "deuteranopia": 2, "deuteranomaly": 2, "tritanopia": 2, "tritanomaly": 2, "achromatopsia": 2, "achromatomaly": 2},
+      "detectedDefect": "protanopia",
+      "controlPlateErrors": false
+    },
+    "experiencePostTest": {
+      "navigationEase": "Fácil",
+      "colorsSharper": "Sim",
+      "recommendFilter": "Sim",
+      "comments": "Ajudou bastante"
+    },
+    "appliedFilter": {"type": "protanopia", "intensity": 100, "shift": 0.5, "enabled": true}
+  }
+]
