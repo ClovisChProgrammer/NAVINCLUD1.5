@@ -52,6 +52,32 @@
         "wizard.html",
         "wizard.js"
       ]
+    },
+    {
+      "id": 4,
+      "timestamp": "2026-05-22 10:57:57",
+      "commit_hash": "[main 9c99454] [SNAPSHOT] 2026-05-22 10:57:57 | MARCO: limpeza repositorio - removidos pngbk, screenshots, test data, logs, zip. images/ agora contem so as 18 plates.webp\n 18 files changed, 34 insertions(+), 1136 deletions(-)\n delete mode 100644 00TESTES/navinclud_10_testes_2026-05-16T00-56-10.json\n delete mode 100644 Navinclud2026.zip\n delete mode 100644 icon128.pngbk\n delete mode 100644 icon16.pngbk\n delete mode 100644 icon48.pngbk\n delete mode 100644 images/3.png\n delete mode 100644 images/4.png\n delete mode 100644 images/5.png\n delete mode 100644 images/Captura de tela 2026-05-11 222303.png\n delete mode 100644 images/Captura de tela 2026-05-11 222406.png\n delete mode 100644 images/Captura de tela 2026-05-11 222503.png\n delete mode 100644 images/Captura de tela 2026-05-11 222849.png\n delete mode 100644 images/Captura de tela 2026-05-11 222922.png\n delete mode 100644 navinclud_10_testes_2026-05-16T00-56-10.json\n delete mode 100644 navinclud_test_sample.sonj\n delete mode 100644 porto-seguro.log",
+      "message": "MARCO: limpeza repositorio - removidos pngbk, screenshots, test data, logs, zip. images/ agora contem so as 18 plates.webp",
+      "modified_files": [
+        ".gitignore",
+        "00TESTES/navinclud_10_testes_2026-05-16T00-56-10.json",
+        "Navinclud2026.zip",
+        "icon128.pngbk",
+        "icon16.pngbk",
+        "icon48.pngbk",
+        "images/3.png",
+        "images/4.png",
+        "images/5.png",
+        "images/Captura de tela 2026-05-11 222303.png",
+        "images/Captura de tela 2026-05-11 222406.png",
+        "images/Captura de tela 2026-05-11 222503.png",
+        "images/Captura de tela 2026-05-11 222849.png",
+        "images/Captura de tela 2026-05-11 222922.png",
+        "navinclud_10_testes_2026-05-16T00-56-10.json",
+        "navinclud_test_sample.sonj",
+        "porto-seguro.log",
+        "snapshots/snapshot_index.json"
+      ]
     }
   ]
 }
