@@ -78,6 +78,15 @@
         "porto-seguro.log",
         "snapshots/snapshot_index.json"
       ]
+    },
+    {
+      "id": 5,
+      "timestamp": "2026-05-22 11:02:32",
+      "commit_hash": "[main f579d30] [SNAPSHOT] 2026-05-22 11:02:32 | MARCO: removidas simulacoes (simulate_*.py, simulacao_*/, relatorios .txt) - nao afetam extensao\n 1 file changed, 26 insertions(+)",
+      "message": "MARCO: removidas simulacoes (simulate_*.py, simulacao_*/, relatorios .txt) - nao afetam extensao",
+      "modified_files": [
+        "snapshots/snapshot_index.json"
+      ]
     }
   ]
 }
