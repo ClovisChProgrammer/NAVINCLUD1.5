@@ -35,3 +35,8 @@ porto-seguro.log
 
 # Zip backup
 Navinclud2026.zip
+
+# Simulador de testes
+simulacao_progresso.json
+extension_id.txt
+chromedriver_ext*.log
