@@ -1,0 +1,36 @@
+{
+  "max_snapshots": 5,
+  "entries": [
+    {
+      "id": 1,
+      "timestamp": "2026-05-21 22:40:52",
+      "commit_hash": "[main 790556d] [SNAPSHOT] 2026-05-21 22:40:52 | BASELINE FUNCIONAL - todos os 7 filtros, slides, toggle, placas funcionando - antes de modificacoes\n 85 files changed, 4422 insertions(+), 158 deletions(-)\n create mode 100644 .gitignore\n create mode 100644 0000-Sugestoes.txt\n create mode 100644 00TESTES/navinclud_10_testes_2026-05-16T00-56-10.json\n create mode 100644 APRESENTACAO.md\n create mode 100644 Adendo.txt\n create mode 100644 DocsPesq/01_Termo_Assentimento.html\n create mode 100644 DocsPesq/02_Formulario_Pesquisa.html\n create mode 100644 DocsPesq/03_Pedido_Coordenador.html\n create mode 100644 \"DocsPesq/Formul\\303\\241rio1.txt\"\n create mode 100644 \"DocsPesq/Formul\\303\\241rio2.txt\"\n create mode 100644 DocsPesq/Pedido ao Coordenador.txt\n create mode 100644 DocsPesq/img/1-dark.png\n create mode 100644 DocsPesq/img/1-dark2.png\n create mode 100644 DocsPesq/img/1-light.png\n create mode 100644 DocsPesq/img/1-light2.png\n create mode 100644 DocsPesq/img/2-dark.png\n create mode 100644 DocsPesq/img/2-light.png\n create mode 100644 DocsPesq/img/3-light.png\n create mode 100644 DocsPesq/img/3-med.png\n create mode 100644 DocsPesq/img/4-light.png\n create mode 100644 DocsPesq/img/4-light2.png\n create mode 100644 DocsPesq/img/4-med.png\n create mode 100644 DocsPesq/img/4-med2.png\n create mode 100644 DocsPesq/img/5-light.png\n create mode 100644 DocsPesq/img/5-med.png\n create mode 100644 DocsPesq/img/6-dark.png\n create mode 100644 DocsPesq/img/6-light.png\n create mode 100644 DocsPesq/img/6-light2.png\n create mode 100644 DocsPesq/img/7-light.png\n create mode 100644 DocsPesq/img/7-med.png\n create mode 100644 DocsPesq/img/8-dark.png\n create mode 100644 DocsPesq/img/8-light.png\n create mode 100644 DocsPesq/img/8-light2.png\n create mode 100644 DocsPesq/img/9-dark.png\n create mode 100644 DocsPesq/img/9-light.png\n create mode 100644 Navinclud2026.zip\n create mode 100644 PLANEJAMENTO-AGGREGATE.txt\n create mode 100644 aggregate_results.py\n create mode 100644 calibrate.js\n create mode 100644 experience.js\n create mode 100644 gui/field_discovery.py\n create mode 100644 gui/gui_navinclud.py\n create mode 100644 gui/nav_data.py\n create mode 100644 gui/requirements_gui.txt\n create mode 100644 icon128.pngbk\n create mode 100644 icon16.pngbk\n create mode 100644 icon48.pngbk\n create mode 100644 images/3.png\n create mode 100644 images/4.png\n create mode 100644 images/5.png\n create mode 100644 images/Captura de tela 2026-05-11 222303.png\n create mode 100644 images/Captura de tela 2026-05-11 222406.png\n create mode 100644 images/Captura de tela 2026-05-11 222503.png\n create mode 100644 images/Captura de tela 2026-05-11 222849.png\n create mode 100644 images/Captura de tela 2026-05-11 222922.png\n create mode 100644 main.py\n create mode 100644 navinclud_10_testes_2026-05-16T00-56-10.json\n create mode 100644 navinclud_test_sample.sonj\n create mode 100644 porto-seguro.log\n create mode 100644 snapshot.py\n create mode 100644 test_checklist.md\n create mode 100644 validate_plates.py",
+      "message": "BASELINE FUNCIONAL - todos os 7 filtros, slides, toggle, placas funcionando - antes de modificacoes",
+      "modified_files": [
+        "calibrate.html",
+        "content.js",
+        "experience.html",
+        "images/plate1.webp",
+        "images/plate10.webp",
+        "images/plate11.webp",
+        "images/plate12.webp",
+        "images/plate13.webp",
+        "images/plate14.webp",
+        "images/plate15.webp",
+        "images/plate16.webp",
+        "images/plate17.webp",
+        "images/plate18.webp",
+        "images/plate2.webp",
+        "images/plate3.webp",
+        "images/plate4.webp",
+        "images/plate5.webp",
+        "images/plate6.webp",
+        "images/plate7.webp",
+        "images/plate8.webp",
+        "images/plate9.webp",
+        "manifest.json",
+        "wizard.js"
+      ]
+    }
+  ]
+}
