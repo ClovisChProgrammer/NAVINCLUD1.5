@@ -40,3 +40,22 @@ Navinclud2026.zip
 simulacao_progresso.json
 extension_id.txt
 chromedriver_ext*.log
+progresso_teste_5salas.json
+
+# Perfis Chrome (dados temporarios)
+chrome_test_profile/
+perfil_temporario/
+chrome_for_testing/
+
+# Dados de teste gerados
+resultados/
+
+# Configuracoes locais
+.opencode/
+*.local.md
+
+# Andamentos KAI (nao commitados por padrao - esta no .gitignore)
+Andamentos KAI.md
+
+# Scripts duplicados/antigos
+simulate_teste_5salas.py

@@ -1,15 +1,28 @@
 #!/usr/bin/env python3
 """
 NAVINCLUD - Simulador de Testes para 5 Salas (100 alunos)
-Usa o perfil Chrome real do usuario (extensao ja carregada).
-Requer chromedriver na pasta chromedriver-win64/.
+Usa Chrome for Testing e chromedriver.
+
+Uso: python simulate_5salas_testes.py [opcoes]
+  --fast          reacoes rapidas (0.5-2s) para testar fluxo
+  --resume        NAO deleta perfil existente (continua de onde parou)
+  --skip N        pula os primeiros N alunos (ex: --skip 73)
+  --seed N        seed fixa para reprodutibilidade (padrao: 42)
+  (padrao)        reacoes realistas (2-11s) para simulacao final
 """
 
+import argparse
 import json
 import os
 import random
 import sys
 import time
+import zipfile
+import io
+import urllib.request
+import shutil
+
+import requests
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -21,9 +34,27 @@ from selenium.common.exceptions import (NoSuchElementException, TimeoutException
                                         NoSuchWindowException, WebDriverException)
 
 CHROMEDRIVER_PATH = os.path.join(os.path.dirname(__file__), "chromedriver-win64", "chromedriver.exe")
-USER_DATA_DIR = r"C:\Users\clovi\AppData\Local\Google\Chrome\User Data"
+EXTENSION_PATH = os.path.abspath(".")
+CFT_DIR = os.path.join(os.path.dirname(__file__), "chrome_for_testing")
+CFT_EXE = os.path.join(CFT_DIR, "chrome-win64", "chrome.exe")
+TEMP_PROFILE_DIR = os.path.join(os.path.dirname(__file__), "perfil_temporario")
 PROGRESS_FILE = os.path.join(os.path.dirname(__file__), "simulacao_progresso.json")
 EXT_ID_FILE = os.path.join(os.path.dirname(__file__), "extension_id.txt")
+
+parser = argparse.ArgumentParser(description="Simulador NAVINCLUD")
+parser.add_argument("--fast", action="store_true", help="Reacoes rapidas (0.5-2s)")
+parser.add_argument("--resume", action="store_true", help="Nao deleta perfil existente")
+parser.add_argument("--skip", type=int, default=0, help="Pula N alunos iniciais")
+parser.add_argument("--seed", type=int, default=42, help="Seed para reprodutibilidade")
+args = parser.parse_args()
+
+FAST_MODE = args.fast
+RESUME_MODE = args.resume
+SKIP_STUDENTS = args.skip
+RANDOM_SEED = args.seed
+
+if SKIP_STUDENTS > 0:
+    RESUME_MODE = True
 
 PLATES = [
     {"id": 1,  "correct": "12", "type": "control"},
@@ -35,7 +66,7 @@ PLATES = [
     {"id": 7,  "correct": "8",  "type": "deuteranopia"},
     {"id": 8,  "correct": "5",  "type": "deuteranopia"},
     {"id": 9,  "correct": "2",  "type": "deuteranomaly"},
-    {"id": 10, "correct": "10", "type": "deuteranomaly"},
+    {"id": 10, "correct": "15", "type": "deuteranomaly"},
     {"id": 11, "correct": "6",  "type": "tritanopia"},
     {"id": 12, "correct": "3",  "type": "tritanopia"},
     {"id": 13, "correct": "26", "type": "tritanomaly"},
@@ -136,23 +167,85 @@ def pick_perception():
     return random.choice(PERCEPTION_SETS)
 
 
-def is_chrome_running():
+def ensure_chrome_for_testing():
+    if os.path.exists(CFT_EXE):
+        print(f"  Chrome for Testing ja baixado em: {CFT_DIR}")
+        return CFT_EXE
+
+    print(f"  Chrome for Testing nao encontrado. Baixando (150MB)...")
+    print(f"  (isso ocorre apenas uma vez)")
+
+    os.makedirs(CFT_DIR, exist_ok=True)
+
+    chrome_version = "148.0.7778.178"
+    url = f"https://storage.googleapis.com/chrome-for-testing-public/{chrome_version}/win64/chrome-win64.zip"
+    zip_path = os.path.join(CFT_DIR, "chrome-win64.zip")
+
+    print(f"  URL: {url}")
     try:
-        import subprocess
-        output = subprocess.run(["tasklist", "/FI", "IMAGENAME eq chrome.exe"],
-                                capture_output=True, text=True, timeout=5)
-        return "chrome.exe" in output.stdout
-    except Exception:
+        resp = requests.get(url, stream=True, timeout=300)
+        resp.raise_for_status()
+        total = int(resp.headers.get("content-length", 0))
+        downloaded = 0
+        with open(zip_path, "wb") as f:
+            for chunk in resp.iter_content(chunk_size=8192):
+                f.write(chunk)
+                downloaded += len(chunk)
+                if total > 0:
+                    pct = int(downloaded / total * 100)
+                    if pct % 25 == 0 and downloaded < total:
+                        print(f"    Download: {pct}%")
+        print(f"    Download: 100%")
+    except Exception as e:
+        print(f"  ERRO ao baixar Chrome for Testing: {e}")
+        return None
+
+    print("  Extraindo...")
+    try:
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            zf.extractall(CFT_DIR)
+        os.remove(zip_path)
+    except Exception as e:
+        print(f"  ERRO ao extrair: {e}")
+        return None
+
+    if os.path.exists(CFT_EXE):
+        print(f"  Chrome for Testing pronto: {CFT_EXE}")
+        return CFT_EXE
+    else:
+        print(f"  ERRO: chrome.exe nao encontrado apos extracao.")
         return None
 
 
-def setup_driver():
-    print("  Iniciando Chrome com seu perfil real...")
+def kill_chrome_processes():
+    try:
+        import subprocess
+        subprocess.run(["taskkill", "/F", "/IM", "chrome.exe"],
+                       capture_output=True, text=True, timeout=10)
+        time.sleep(2)
+    except Exception:
+        pass
+
+
+def setup_driver(cft_exe, resume=False):
+    print("  Fechando processos do Chrome existentes...")
+    kill_chrome_processes()
+
+    if not resume and os.path.exists(TEMP_PROFILE_DIR):
+        shutil.rmtree(TEMP_PROFILE_DIR, ignore_errors=True)
+    elif resume and os.path.exists(TEMP_PROFILE_DIR):
+        print(f"  MODO RETOMADA: Preservando perfil existente em {TEMP_PROFILE_DIR}")
+
+    print("  Iniciando Chrome for Testing com extensao NAVINCLUD...")
     options = Options()
-    options.add_argument(f"--user-data-dir={USER_DATA_DIR}")
+    options.binary_location = cft_exe
+    options.add_argument(f"--load-extension={EXTENSION_PATH}")
+    options.add_argument(f"--user-data-dir={TEMP_PROFILE_DIR}")
     options.add_argument("--no-first-run")
     options.add_argument("--no-default-browser-check")
     options.add_argument("--disable-search-engine-choice-screen")
+    options.add_argument("--disable-sync")
+    options.add_argument("--disable-features=ChromeWhatsNewUI")
 
     service = Service(executable_path=CHROMEDRIVER_PATH)
     driver = webdriver.Chrome(service=service, options=options)
@@ -172,22 +265,29 @@ def get_extension_id(driver):
     print("  Detectando ID da extensao NAVINCLUD...")
     try:
         driver.get("chrome://extensions/")
-        time.sleep(3)
         ext_id = driver.execute_script("""
-            const mgr = document.querySelector('extensions-manager');
-            if (!mgr) return null;
-            const root = mgr.shadowRoot;
-            const itemsList = root.querySelector('#itemsList');
-            if (!itemsList) return null;
-            const iroot = itemsList.shadowRoot;
-            const items = iroot.querySelectorAll('extensions-item');
-            for (let item of items) {
-                const name = item.getAttribute('name') || '';
-                if (name.toLowerCase().includes('navinclud')) {
-                    return item.getAttribute('id');
-                }
+            function check() {
+                const mgr = document.querySelector('extensions-manager');
+                if (!mgr) return null;
+                const root = mgr.shadowRoot;
+                const itemsList = root.querySelector('#itemsList');
+                if (!itemsList) return null;
+                const iroot = itemsList.shadowRoot;
+                const item = iroot.querySelector('extensions-item');
+                return item ? item.id : null;
             }
-            return null;
+            let result = check();
+            if (result) return result;
+            return new Promise((resolve) => {
+                let start = Date.now();
+                function poll() {
+                    result = check();
+                    if (result) { resolve(result); return; }
+                    if (Date.now() - start > 10000) { resolve(null); return; }
+                    setTimeout(poll, 200);
+                }
+                poll();
+            });
         """)
         if ext_id:
             print(f"  Extensao encontrada: {ext_id}")
@@ -204,32 +304,16 @@ def get_extension_id(driver):
     return val if val else None
 
 
-def wait_for_new_window(driver, known_handles, timeout=15):
-    deadline = time.time() + timeout
-    while time.time() < deadline:
-        current = set(driver.window_handles)
-        new_handles = current - known_handles
-        if new_handles:
-            return list(new_handles)
-        time.sleep(0.5)
-    return []
-
-
-def run_single_test(driver, ext_id, student, main_handle, reused_wizard=False):
+def run_single_test(driver, ext_id, student, main_handle):
     wizard_url = f"chrome-extension://{ext_id}/wizard.html"
     wait = WebDriverWait(driver, 15)
 
-    if not reused_wizard:
-        known_handles = set(driver.window_handles)
-        driver.execute_script(f"window.open('{wizard_url}', '_blank', 'width=420,height=600');")
-        new_handles = wait_for_new_window(driver, known_handles)
-        if not new_handles:
-            print("ERRO: Janela do wizard nao abriu.")
-            return False
-        driver.switch_to.window(new_handles[0])
-    else:
-        if driver.current_url != wizard_url:
-            driver.get(wizard_url)
+    # Abre wizard em JANELA separada (nao aba) para que
+    # chrome.windows.remove() nao mate a janela principal.
+    support_handle = driver.current_window_handle
+    driver.switch_to.new_window('window')
+    wiz_handle = driver.current_window_handle
+    driver.get(wizard_url)
 
     try:
         wait.until(EC.presence_of_element_located((By.ID, "preSexo")))
@@ -265,7 +349,9 @@ def run_single_test(driver, ext_id, student, main_handle, reused_wizard=False):
             return False
 
         is_defect = i in defect_plates
-        if student["is_defective"]:
+        if FAST_MODE:
+            reaction = random.uniform(0.5, 2)
+        elif student["is_defective"]:
             reaction = random.uniform(6, 11)
         else:
             if random.random() < 0.4:
@@ -324,45 +410,67 @@ def run_single_test(driver, ext_id, student, main_handle, reused_wizard=False):
             print("ERRO: Tela de convite para experiencia nao apareceu.")
             return False
 
-        wiz_handle = driver.current_window_handle
-
         driver.find_element(By.ID, "start-experience-btn").click()
+        time.sleep(5)
 
-        deadline = time.time() + 15
-        exp_window_found = False
-        while time.time() < deadline:
+        wiz_dead = False
+        try:
+            driver.current_url
+        except Exception:
+            wiz_dead = True
+
+        if wiz_dead:
+            # Janela do wizard foi fechada; volta pra support_handle
             try:
-                for h in driver.window_handles:
-                    if h == main_handle or h == wiz_handle:
-                        continue
-                    try:
-                        driver.switch_to.window(h)
-                        if "experience.html" in driver.current_url:
-                            exp_window_found = True
-                            break
-                    except (NoSuchWindowException, WebDriverException):
-                        continue
-                if exp_window_found:
-                    break
-            except WebDriverException:
+                driver.switch_to.window(support_handle)
+            except Exception:
                 pass
-            time.sleep(0.5)
 
-        if not exp_window_found:
-            print("ERRO: Janela de experiencia nao encontrada.")
+        # Procura handle com experience.html entre as janelas abertas
+        exp_found = False
+        deadline = time.time() + 10
+        while time.time() < deadline:
+            for h in driver.window_handles:
+                try:
+                    driver.switch_to.window(h)
+                    if "experience.html" in driver.current_url:
+                        exp_found = True
+                        break
+                except Exception:
+                    continue
+            if exp_found:
+                break
+            time.sleep(1)
+
+        if not exp_found:
+            # Navega uma janela existente para experience.html
+            for h in driver.window_handles:
+                try:
+                    driver.switch_to.window(h)
+                    driver.get(f"chrome-extension://{ext_id}/experience.html")
+                    exp_found = True
+                    break
+                except Exception:
+                    continue
+
+        if not exp_found:
+            print("ERRO: Nao foi possivel acessar experience.html.")
             return False
 
         try:
-            wait.until(EC.presence_of_element_located((By.ID, "exit-experience-btn")))
+            wait.until(EC.element_to_be_clickable((By.ID, "exit-experience-btn")))
         except TimeoutException:
             pass
 
-        time.sleep(random.uniform(5, 10))
+        time.sleep(random.uniform(2, 5))
 
         try:
             driver.find_element(By.ID, "exit-experience-btn").click()
-        except NoSuchElementException:
-            pass
+        except Exception:
+            try:
+                driver.execute_script("document.getElementById('exit-experience-btn').click()")
+            except Exception:
+                pass
 
         try:
             wait.until(EC.presence_of_element_located((By.NAME, "visualImprovement")))
@@ -381,9 +489,33 @@ def run_single_test(driver, ext_id, student, main_handle, reused_wizard=False):
             "//input[@name='comfortLevel' and @value='Sim']").click()
         driver.find_element(By.ID, "save-responses-btn").click()
 
-        time.sleep(7)
+        try:
+            wait.until(EC.presence_of_element_located((By.ID, "thankyou-screen")))
+        except TimeoutException:
+            pass
 
-        driver.switch_to.window(main_handle)
+        # Sai da pagina experience.html para cancelar pending
+        # setTimeout do showThankYou (que faria chrome.windows.remove
+        # e mataria a sessao do Selenium)
+        try:
+            driver.get("about:blank")
+        except Exception:
+            pass
+
+        # Fecha handles excedentes, deixa 1 about:blank
+        for h in list(driver.window_handles)[1:]:
+            try:
+                driver.switch_to.window(h)
+                driver.close()
+            except Exception:
+                pass
+        if driver.window_handles:
+            try:
+                driver.switch_to.window(driver.window_handles[0])
+                if "about:blank" not in driver.current_url:
+                    driver.get("about:blank")
+            except Exception:
+                pass
         return True
 
     else:
@@ -405,14 +537,37 @@ def run_single_test(driver, ext_id, student, main_handle, reused_wizard=False):
             return False
 
         driver.find_element(By.ID, "new-test-btn").click()
+
+        # Fecha janela do wizard e abas excedentes
+        try:
+            driver.switch_to.window(wiz_handle)
+            driver.close()
+        except Exception:
+            pass
+        for h in list(driver.window_handles)[1:]:
+            try:
+                driver.switch_to.window(h)
+                driver.close()
+            except Exception:
+                pass
+        if driver.window_handles:
+            try:
+                driver.switch_to.window(driver.window_handles[0])
+                driver.get("about:blank")
+            except Exception:
+                pass
         return True
 
 
-def save_progress(completed_classes):
-    data = {"completed_classes": completed_classes, "timestamp": time.time()}
+def save_progress(completed_classes, students_completed=0):
+    data = {
+        "completed_classes": completed_classes,
+        "students_completed": students_completed,
+        "timestamp": time.time()
+    }
     try:
         with open(PROGRESS_FILE, "w") as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=2)
     except Exception:
         pass
 
@@ -422,31 +577,48 @@ def load_progress():
         with open(PROGRESS_FILE, "r") as f:
             return json.load(f)
     except Exception:
-        return {"completed_classes": [], "timestamp": 0}
+        return {"completed_classes": [], "students_completed": 0, "timestamp": 0}
 
 
 def main():
+    global SKIP_STUDENTS
+    random.seed(RANDOM_SEED)
+
     print("=" * 55)
     print("  NAVINCLUD - SIMULADOR DE TESTES PARA 5 SALAS")
     print("  Total: 100 alunos | Salas: 3A 3B 2A 2B 1A")
+    print(f"  Seed: {RANDOM_SEED} (reprodutivel)")
+    if FAST_MODE:
+        print("  MODO RAPIDO (reacoes de 0.5-2s) - Apenas para teste de fluxo")
+    if RESUME_MODE:
+        print("  MODO RETOMADA (preserva perfil existente)")
+    if SKIP_STUDENTS > 0:
+        print(f"  PULANDO primeiros {SKIP_STUDENTS} alunos")
     print("=" * 55)
-
-    chrome_status = is_chrome_running()
-    if chrome_status is True:
-        print("\n  [!] Chrome esta ABERTO. Feche-o completamente antes de continuar.")
-        print("  Pressione Enter apos fechar o Chrome...")
-        input()
-        chrome_status = is_chrome_running()
-        if chrome_status is True:
-            print("\n  Chrome ainda esta rodando. Feche manualmente e reinicie.")
-            sys.exit(1)
-    elif chrome_status is None:
-        print("\n  (Nao foi possivel verificar se o Chrome esta rodando)")
 
     progress = load_progress()
     completed = set(progress.get("completed_classes", []))
+    students_completed_from_file = progress.get("students_completed", 0)
 
-    driver = setup_driver()
+    if SKIP_STUDENTS == 0 and students_completed_from_file > 0:
+        SKIP_STUDENTS = students_completed_from_file
+        print(f"\n  Progresso encontrado: {students_completed_from_file} alunos completados")
+        print(f"  Usando --skip {SKIP_STUDENTS} automaticamente\n")
+
+    all_students = []
+    for class_name in CLASSES_ORDER:
+        config = CLASSES[class_name]
+        estudantes = generate_students(config, class_name)
+        all_students.extend(estudantes)
+
+    cft_exe = ensure_chrome_for_testing()
+    if not cft_exe:
+        print("\nERRO: Chrome for Testing nao disponivel.")
+        print("Baixe manualmente de https://googlechromelabs.github.io/chrome-for-testing/")
+        print("e extraia em:", CFT_DIR)
+        sys.exit(1)
+
+    driver = setup_driver(cft_exe, resume=RESUME_MODE)
     try:
         ext_id = get_extension_id(driver)
         if not ext_id:
@@ -460,64 +632,84 @@ def main():
         main_handle = driver.current_window_handle
         print(f"  Janela ancora: {main_handle}\n")
 
-        for class_name in CLASSES_ORDER:
-            if class_name in completed:
-                print(f"  Sala {class_name} ja completada (pulando).")
+        current_class = None
+        class_completed_students = 0
+
+        for global_idx, student in enumerate(all_students, 1):
+            if global_idx <= SKIP_STUDENTS:
+                if current_class != student["turma"]:
+                    current_class = student["turma"]
+                    class_completed_students = 0
+                class_completed_students += 1
                 continue
 
-            config = CLASSES[class_name]
-            estudantes = generate_students(config, class_name)
-            num_defect = sum(1 for s in estudantes if s["is_defective"])
+            if current_class != student["turma"]:
+                if current_class is not None and current_class in completed:
+                    pass
+                current_class = student["turma"]
+                if current_class in completed:
+                    print(f"  Sala {current_class} ja completada (pulando).")
+                    continue
 
-            print(f"{'='*50}")
-            print(f"  SALA {class_name}: {config['total']} alunos "
-                  f"({config['males']}M/{config['total']-config['males']}F)"
-                  f"  |  {num_defect} com diagnostico")
-            print(f"{'='*50}")
+                config = CLASSES[current_class]
+                num_defect = sum(1 for s in all_students if s["turma"] == current_class and s["is_defective"])
 
-            reused = False
+                print(f"{'='*50}")
+                print(f"  SALA {current_class}: {config['total']} alunos "
+                      f"({config['males']}M/{config['total']-config['males']}F)"
+                      f"  |  {num_defect} com diagnostico")
+                print(f"{'='*50}")
+                class_completed_students = 0
 
-            for idx, student in enumerate(estudantes, 1):
-                turma_display = student["turma"]
-                sexo_display = "M" if student["sexo"] == "Masculino" else "F"
-                idade_display = student["idade"]
-                defect_str = f" [{student['defect_type']}]" if student["is_defective"] else ""
-                print(f"    [{idx:2d}/{config['total']}] "
-                      f"{turma_display} | {sexo_display} | {idade_display:2d}a"
-                      f"{defect_str} ... ", end="", flush=True)
+            config = CLASSES[current_class]
+            class_students = [s for s in all_students if s["turma"] == current_class]
+            class_idx = class_completed_students + 1
 
-                try:
-                    ok = run_single_test(driver, ext_id, student,
-                                         main_handle, reused_wizard=reused)
-                    if not ok:
-                        print("FALHA")
-                        sys.exit(1)
-                    reused = not student["is_defective"]
-                    print("OK")
-                except KeyboardInterrupt:
-                    print("\n\n  Interrompido pelo usuario.")
-                    save_progress(list(completed))
-                    driver.quit()
-                    sys.exit(0)
-                except Exception as e:
-                    print(f"ERRO: {e}")
-                    save_progress(list(completed))
-                    driver.quit()
+            turma_display = student["turma"]
+            sexo_display = "M" if student["sexo"] == "Masculino" else "F"
+            idade_display = student["idade"]
+            defect_str = f" [{student['defect_type']}]" if student["is_defective"] else ""
+            print(f"    [{class_idx:2d}/{config['total']}] (global {global_idx}/100) "
+                  f"{turma_display} | {sexo_display} | {idade_display:2d}a"
+                  f"{defect_str} ... ", end="", flush=True)
+
+            try:
+                ok = run_single_test(driver, ext_id, student, main_handle)
+                if not ok:
+                    print("FALHA")
+                    save_progress(list(completed), global_idx - 1)
                     sys.exit(1)
+                print("OK")
+                class_completed_students += 1
+                save_progress(list(completed), global_idx)
+            except KeyboardInterrupt:
+                print("\n\n  Interrompido pelo usuario.")
+                save_progress(list(completed), global_idx - 1)
+                driver.quit()
+                sys.exit(0)
+            except Exception as e:
+                print(f"ERRO: {e}")
+                save_progress(list(completed), global_idx - 1)
+                driver.quit()
+                sys.exit(1)
 
-            completed.add(class_name)
-            save_progress(list(completed))
+            if class_completed_students >= config["total"]:
+                completed.add(current_class)
+                save_progress(list(completed), global_idx)
 
-            if class_name != CLASSES_ORDER[-1]:
-                print()
-                input("  >>> SALA CONCLUIDA! Faca o EXPORT manual no popup,")
-                input("  >>> depois pressione Enter para continuar...")
-                driver.switch_to.window(main_handle)
-                print()
+                if current_class != CLASSES_ORDER[-1]:
+                    print()
+                    try:
+                        input("  >>> SALA CONCLUIDA! Faca o EXPORT manual no popup "
+                              "e pressione Enter para continuar...")
+                    except (EOFError, KeyboardInterrupt):
+                        print()
+                    driver.switch_to.window(main_handle)
+                    print()
 
         print(f"\n{'='*55}")
         print("  TODAS AS 5 SALAS CONCLUIDAS COM SUCESSO!")
-        print(f"  100 alunos simulados | 7 diagnosticados")
+        print("  100 alunos simulados | 7 diagnosticados")
         print(f"{'='*55}")
         print(f"\n  Dados salvos no chrome.storage.local da extensao.")
         print(f"  Use o botao EXPORTAR no popup NAVINCLUD para extrair.")
