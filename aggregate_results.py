@@ -35,13 +35,38 @@ class TypoCorrector:
         return obj
 
 
+def extract_tests_from_data(data):
+    """Extrai testes de dados que podem ser lista ou dict."""
+    required_keys = ['testId', 'timestamp', 'testResults', 'preTest']
+    valid = []
+    
+    if isinstance(data, list):
+        for item in data:
+            if isinstance(item, dict) and all(k in item for k in required_keys):
+                valid.append(TypoCorrector.correct_nested(item))
+    
+    elif isinstance(data, dict):
+        if all(k in data for k in required_keys):
+            valid.append(TypoCorrector.correct_nested(data))
+        else:
+            for key, value in data.items():
+                if isinstance(value, dict) and all(k in value for k in required_keys):
+                    valid.append(TypoCorrector.correct_nested(value))
+    
+    return valid
+
+
 def load_all_results(directory):
-    """Carrega todos os arquivos JSON de resultados do diretório."""
-    all_tests = []
+    """Carrega todos os arquivos JSON de resultados do diretório.
+    Aceita prefixos: navinclud_ e resultados_
+    Aceita formatos: lista [] ou dict { "test_xxx": {...} }
+    Deduplica automaticamente baseado no testId.
+    """
+    all_tests_dict = {}
     terminal_count = defaultdict(int)
     
     for filename in os.listdir(directory):
-        if not filename.startswith('navinclud_'):
+        if not (filename.startswith('navinclud_') or filename.startswith('resultados_')):
             continue
         if not filename.endswith('.json'):
             continue
@@ -50,27 +75,31 @@ def load_all_results(directory):
         try:
             with open(filepath, 'r', encoding='utf-8-sig') as f:
                 data = json.load(f)
-                
-                required_keys = ['testId', 'timestamp', 'testResults', 'preTest']
-                if isinstance(data, list):
-                    valid = [TypoCorrector.correct_nested(item) for item in data 
-                            if isinstance(item, dict) and all(k in item for k in required_keys)]
-                    all_tests.extend(valid)
-                    for t in valid:
+            
+            valid = extract_tests_from_data(data)
+            
+            if valid:
+                novos = 0
+                for t in valid:
+                    test_id = t.get('testId')
+                    if test_id and test_id not in all_tests_dict:
+                        all_tests_dict[test_id] = t
                         tid = t.get('terminalId', 'unknown')
                         terminal_count[tid] += 1
-                elif isinstance(data, dict) and all(k in data for k in required_keys):
-                    corrected = TypoCorrector.correct_nested(data)
-                    all_tests.append(corrected)
-                    tid = corrected.get('terminalId', 'unknown')
-                    terminal_count[tid] += 1
+                        novos += 1
+                if novos > 0:
+                    print(f"  OK: {filename} -> {novos} novos testes ({len(valid)-novos} duplicados ignorados)")
                 else:
-                    print(f"Ignorado {filename}: schema inválido (chaves ausentes)")
+                    print(f"  Aviso: {filename} -> {len(valid)} duplicados (nenhum novo)")
+            else:
+                print(f"  Aviso: {filename} -> 0 testes validos")
+                
         except json.JSONDecodeError as e:
-            print(f"Erro JSON em {filename}: {e}")
+            print(f"  Erro JSON em {filename}: {e}")
         except Exception as e:
-            print(f"Erro ao ler {filename}: {e}")
+            print(f"  Erro ao ler {filename}: {e}")
     
+    all_tests = list(all_tests_dict.values())
     return all_tests, terminal_count
 
 def generate_report(all_tests, terminal_count):

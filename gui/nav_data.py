@@ -5,6 +5,36 @@ import pandas as pd
 from field_discovery import FieldDiscoverer, TypoCorrector
 
 
+def extract_tests_from_data(data, filename, directory):
+    """Extrai testes de dados que podem ser lista ou dict."""
+    required = ['testId', 'timestamp', 'testResults', 'preTest']
+    valid = []
+    
+    if isinstance(data, list):
+        for item in data:
+            if isinstance(item, dict) and all(k in item for k in required):
+                corrected = TypoCorrector.correct_nested(item)
+                corrected['_source_file'] = filename
+                corrected['_source_dir'] = directory
+                valid.append(corrected)
+    
+    elif isinstance(data, dict):
+        if all(k in data for k in required):
+            corrected = TypoCorrector.correct_nested(data)
+            corrected['_source_file'] = filename
+            corrected['_source_dir'] = directory
+            valid.append(corrected)
+        else:
+            for key, value in data.items():
+                if isinstance(value, dict) and all(k in value for k in required):
+                    corrected = TypoCorrector.correct_nested(value)
+                    corrected['_source_file'] = filename
+                    corrected['_source_dir'] = directory
+                    valid.append(corrected)
+    
+    return valid
+
+
 class NavData:
     def __init__(self):
         self.directories = []
@@ -16,9 +46,11 @@ class NavData:
         self.loaded_count = 0
         self.error_count = 0
         self._lock = threading.Lock()
+        self._seen_test_ids = set()
 
     def load_directory(self, directory, progress_callback=None):
         loaded = []
+        duplicates_ignored = 0
         terminal_count = {}
         error_count = 0
 
@@ -26,31 +58,27 @@ class NavData:
             raise FileNotFoundError(f'Diretorio nao encontrado: {directory}')
 
         files = [f for f in os.listdir(directory)
-                 if f.startswith('navinclud_') and f.endswith('.json')]
+                 if (f.startswith('navinclud_') or f.startswith('resultados_')) 
+                 and f.endswith('.json')]
 
         for i, filename in enumerate(files):
             filepath = os.path.join(directory, filename)
             try:
-                with open(filepath, 'r', encoding='utf-8') as f:
+                with open(filepath, 'r', encoding='utf-8-sig') as f:
                     data = json.load(f)
 
-                required = ['testId', 'timestamp', 'testResults', 'preTest']
-                if isinstance(data, list):
-                    valid = [item for item in data
-                             if isinstance(item, dict) and all(k in item for k in required)]
-                    for item in valid:
-                        item['_source_file'] = filename
-                        item['_source_dir'] = directory
-                    loaded.extend(valid)
+                valid = extract_tests_from_data(data, filename, directory)
+                
+                if valid:
                     for t in valid:
-                        tid = t.get('terminalId', 'unknown')
-                        terminal_count[tid] = terminal_count.get(tid, 0) + 1
-                elif isinstance(data, dict) and all(k in data for k in required):
-                    data['_source_file'] = filename
-                    data['_source_dir'] = directory
-                    loaded.append(data)
-                    tid = data.get('terminalId', 'unknown')
-                    terminal_count[tid] = terminal_count.get(tid, 0) + 1
+                        test_id = t.get('testId')
+                        if test_id and test_id not in self._seen_test_ids:
+                            self._seen_test_ids.add(test_id)
+                            loaded.append(t)
+                            tid = t.get('terminalId', 'unknown')
+                            terminal_count[tid] = terminal_count.get(tid, 0) + 1
+                        else:
+                            duplicates_ignored += 1
                 else:
                     error_count += 1
             except (json.JSONDecodeError, Exception):
@@ -64,6 +92,7 @@ class NavData:
             self.metadata[directory] = {
                 'files': len(files),
                 'valid': len(loaded),
+                'duplicates_ignored': duplicates_ignored,
                 'errors': error_count,
                 'terminals': len(terminal_count),
             }
