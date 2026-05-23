@@ -10,36 +10,59 @@ import json
 import argparse
 from collections import defaultdict
 
+
+class TypoCorrector:
+    TYPO_MAP = {
+        'deutanopia': 'deuteranopia',
+        'deutanomaly': 'deuteranomaly',
+        'achromaopia': 'achromatopsia',
+    }
+
+    @classmethod
+    def correct(cls, value):
+        if isinstance(value, str):
+            return cls.TYPO_MAP.get(value, value)
+        return value
+
+    @classmethod
+    def correct_nested(cls, obj):
+        if isinstance(obj, dict):
+            return {k: cls.correct_nested(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [cls.correct_nested(item) for item in obj]
+        elif isinstance(obj, str):
+            return cls.TYPO_MAP.get(obj, obj)
+        return obj
+
+
 def load_all_results(directory):
     """Carrega todos os arquivos JSON de resultados do diretório."""
     all_tests = []
     terminal_count = defaultdict(int)
     
     for filename in os.listdir(directory):
-        # Critério 1: Deve começar com 'navinclud_' (padrão do popup.js)
         if not filename.startswith('navinclud_'):
             continue
-        # Critério 2: Deve ser JSON
         if not filename.endswith('.json'):
             continue
             
         filepath = os.path.join(directory, filename)
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, 'r', encoding='utf-8-sig') as f:
                 data = json.load(f)
                 
-                # Critério 3: Validação de schema obrigatório
                 required_keys = ['testId', 'timestamp', 'testResults', 'preTest']
                 if isinstance(data, list):
-                    valid = [item for item in data 
+                    valid = [TypoCorrector.correct_nested(item) for item in data 
                             if isinstance(item, dict) and all(k in item for k in required_keys)]
                     all_tests.extend(valid)
                     for t in valid:
                         tid = t.get('terminalId', 'unknown')
                         terminal_count[tid] += 1
                 elif isinstance(data, dict) and all(k in data for k in required_keys):
-                    all_tests.append(data)
-                    tid = data.get('terminalId', 'unknown')
+                    corrected = TypoCorrector.correct_nested(data)
+                    all_tests.append(corrected)
+                    tid = corrected.get('terminalId', 'unknown')
                     terminal_count[tid] += 1
                 else:
                     print(f"Ignorado {filename}: schema inválido (chaves ausentes)")
@@ -59,6 +82,18 @@ def generate_report(all_tests, terminal_count):
     for test in all_tests:
         sexo = test.get('preTest', {}).get('sexo', 'Não informado')
         sex_counts[sexo] += 1
+    
+    # Contagem por turma
+    turma_counts = defaultdict(int)
+    for test in all_tests:
+        turma = test.get('preTest', {}).get('turma', 'Não informado')
+        turma_counts[turma] += 1
+    
+    # Contagem por idade
+    idade_counts = defaultdict(int)
+    for test in all_tests:
+        idade = test.get('preTest', {}).get('idade', 'Não informado')
+        idade_counts[idade] += 1
     
     # Testes sem deficiência (>=90% corretas)
     normal_tests = [t for t in all_tests if t.get('testResults', {}).get('correctPercent', 0) >= 90]
@@ -93,6 +128,24 @@ def generate_report(all_tests, terminal_count):
     for sexo, count in sex_counts.items():
         pct = (count / total_testers * 100) if total_testers > 0 else 0
         report.append(f"  {sexo}: {count} ({pct:.1f}%)")
+    report.append("")
+    
+    report.append("-" * 40)
+    report.append("1a. DISTRIBUIÇÃO POR TURMA")
+    report.append("-" * 40)
+    for turma in sorted(turma_counts.keys()):
+        count = turma_counts[turma]
+        pct = (count / total_testers * 100) if total_testers > 0 else 0
+        report.append(f"  {turma}: {count} ({pct:.1f}%)")
+    report.append("")
+    
+    report.append("-" * 40)
+    report.append("1b. DISTRIBUIÇÃO POR IDADE")
+    report.append("-" * 40)
+    for idade in sorted(idade_counts.keys(), key=lambda x: int(x) if str(x).isdigit() else 999):
+        count = idade_counts[idade]
+        pct = (count / total_testers * 100) if total_testers > 0 else 0
+        report.append(f"  {idade} anos: {count} ({pct:.1f}%)")
     report.append("")
     
     report.append("-" * 40)
@@ -221,7 +274,7 @@ def main():
     report = generate_report(all_tests, terminal_count)
     
     if args.output:
-        with open(args.output, 'w', encoding='utf-8') as f:
+        with open(args.output, 'w', encoding='utf-8-sig') as f:
             f.write(report)
         print(f"Relatório salvo em: {args.output}")
     else:

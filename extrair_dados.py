@@ -16,6 +16,30 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 
+
+class TypoCorrector:
+    TYPO_MAP = {
+        'deutanopia': 'deuteranopia',
+        'deutanomaly': 'deuteranomaly',
+        'achromaopia': 'achromatopsia',
+    }
+
+    @classmethod
+    def correct(cls, value):
+        if isinstance(value, str):
+            return cls.TYPO_MAP.get(value, value)
+        return value
+
+    @classmethod
+    def correct_nested(cls, obj):
+        if isinstance(obj, dict):
+            return {k: cls.correct_nested(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [cls.correct_nested(item) for item in obj]
+        elif isinstance(obj, str):
+            return cls.TYPO_MAP.get(obj, obj)
+        return obj
+
 CHROMEDRIVER_PATH = os.path.join(os.path.dirname(__file__), "chromedriver-win64", "chromedriver.exe")
 CFT_DIR = os.path.join(os.path.dirname(__file__), "chrome_for_testing")
 CFT_EXE = os.path.join(CFT_DIR, "chrome-win64", "chrome.exe")
@@ -148,38 +172,56 @@ def main():
 
         os.makedirs(RESULTADOS_DIR, exist_ok=True)
 
-        testes_por_sala = {}
-        todos_os_testes = {}
+        testes_por_sala_dict = {}
+        testes_por_sala_list = {}
+        todos_os_testes_dict = {}
+        todos_os_testes_list = []
 
         for key, value in data.items():
             if key.startswith('test_') and isinstance(value, dict):
-                todos_os_testes[key] = value
-                pre_test = value.get('preTest', {})
+                value_corrected = TypoCorrector.correct_nested(value)
+                todos_os_testes_dict[key] = value_corrected
+                todos_os_testes_list.append(value_corrected)
+                pre_test = value_corrected.get('preTest', {})
                 if isinstance(pre_test, dict):
                     turma = pre_test.get('turma')
                     if turma:
-                        if turma not in testes_por_sala:
-                            testes_por_sala[turma] = {}
-                        testes_por_sala[turma][key] = value
+                        if turma not in testes_por_sala_dict:
+                            testes_por_sala_dict[turma] = {}
+                            testes_por_sala_list[turma] = []
+                        testes_por_sala_dict[turma][key] = value_corrected
+                        testes_por_sala_list[turma].append(value_corrected)
 
-        print(f"\n  Testes validos encontrados: {len(todos_os_testes)}")
+        print(f"\n  Testes validos encontrados: {len(todos_os_testes_dict)}")
         print("\n  Distribuicao por sala:")
-        for turma in sorted(testes_por_sala.keys()):
-            print(f"    Sala {turma}: {len(testes_por_sala[turma])} testes")
+        for turma in sorted(testes_por_sala_dict.keys()):
+            print(f"    Sala {turma}: {len(testes_por_sala_dict[turma])} testes")
 
-        for turma, testes in testes_por_sala.items():
-            filename = os.path.join(RESULTADOS_DIR, f"resultados_{turma}.json")
-            with open(filename, "w", encoding="utf-8") as f:
-                json.dump(testes, f, indent=2, ensure_ascii=False)
-            print(f"\n  [SALVO] {filename} ({len(testes)} testes)")
+        for turma, testes_dict in testes_por_sala_dict.items():
+            testes_list = testes_por_sala_list[turma]
+            
+            filename_dict = os.path.join(RESULTADOS_DIR, f"resultados_{turma}.json")
+            with open(filename_dict, "w", encoding="utf-8-sig") as f:
+                json.dump(testes_dict, f, indent=2, ensure_ascii=False)
+            print(f"\n  [SALVO] {filename_dict} (formato dict)")
+            
+            filename_list = os.path.join(RESULTADOS_DIR, f"navinclud_{turma}.json")
+            with open(filename_list, "w", encoding="utf-8-sig") as f:
+                json.dump(testes_list, f, indent=2, ensure_ascii=False)
+            print(f"  [SALVO] {filename_list} (formato lista para agregadores)")
 
-        filename_all = os.path.join(RESULTADOS_DIR, "resultados_TODOS_100.json")
-        with open(filename_all, "w", encoding="utf-8") as f:
-            json.dump(todos_os_testes, f, indent=2, ensure_ascii=False)
-        print(f"\n  [SALVO] {filename_all} ({len(todos_os_testes)} testes)")
+        filename_all_dict = os.path.join(RESULTADOS_DIR, "resultados_TODOS_100.json")
+        with open(filename_all_dict, "w", encoding="utf-8-sig") as f:
+            json.dump(todos_os_testes_dict, f, indent=2, ensure_ascii=False)
+        print(f"\n  [SALVO] {filename_all_dict} (formato dict)")
+
+        filename_all_list = os.path.join(RESULTADOS_DIR, "navinclud_TODOS_100.json")
+        with open(filename_all_list, "w", encoding="utf-8-sig") as f:
+            json.dump(todos_os_testes_list, f, indent=2, ensure_ascii=False)
+        print(f"  [SALVO] {filename_all_list} (formato lista para agregadores)")
 
         filename_dump = os.path.join(RESULTADOS_DIR, "dump_completo_storage.json")
-        with open(filename_dump, "w", encoding="utf-8") as f:
+        with open(filename_dump, "w", encoding="utf-8-sig") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
         print(f"  [SALVO] {filename_dump} (dump completo)")
 
