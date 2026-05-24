@@ -59,3 +59,11 @@ Andamentos KAI.md
 
 # Scripts duplicados/antigos
 simulate_teste_5salas.py
+
+# Testes rapidos
+test_nav_query.py
+teste_export_*
+teste_grafico_*
+
+# Consultas salvas
+consultas_salvas/
