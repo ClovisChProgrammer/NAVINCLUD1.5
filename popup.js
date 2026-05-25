@@ -235,6 +235,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 elements.exportNameInput.style.display = 'none';
                 elements.exportResultMsg.innerHTML = 'ARQUIVO E BKP SALVOS COM ÊXITO.<br><small>(Downloads: ' + history.length + ' testes)</small>';
                 elements.exportResult.style.display = 'block';
+                // Limpa storage apos exportacao
+                chrome.storage.local.get(['testHistoryIds'], function(res) {
+                  var ids = res.testHistoryIds || [];
+                  var keysToRemove = ids.slice();
+                  keysToRemove.push('testHistoryIds');
+                  chrome.storage.local.remove(keysToRemove, function() { updateTestCount(); });
+                });
               });
             } catch(e) {
               // Fallback: segundo download normal se chrome.downloads falhar
@@ -248,6 +255,13 @@ document.addEventListener('DOMContentLoaded', function() {
               elements.exportNameInput.style.display = 'none';
               elements.exportResultMsg.innerHTML = 'ARQUIVO E BKP SALVOS COM ÊXITO.<br><small>(Downloads: ' + history.length + ' testes)</small>';
               elements.exportResult.style.display = 'block';
+              // Limpa storage apos exportacao
+              chrome.storage.local.get(['testHistoryIds'], function(res) {
+                var ids = res.testHistoryIds || [];
+                var keysToRemove = ids.slice();
+                keysToRemove.push('testHistoryIds');
+                chrome.storage.local.remove(keysToRemove, function() { updateTestCount(); });
+              });
             }
           }
         });
