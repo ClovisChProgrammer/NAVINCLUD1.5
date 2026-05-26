@@ -1,21 +1,34 @@
 # NAVINCLUD — Landing Page
 
-Esta branch contém exclusivamente os arquivos da landing page da extensão NAVINCLUD, hospedada via GitHub Pages.
+This branch contains exclusively the landing page files for the NAVINCLUD extension, hosted via GitHub Pages.
 
 **URL:** https://clovischprogrammer.github.io/Navinclud2026TCC/
 
-## Estrutura
+## Structure
 
 ```
-├── index.html       # Página inicial
-├── about.html       # Sobre o projeto
-├── support.html     # Suporte e FAQ
-├── privacy.html     # Política de privacidade
+├── index.html        # English — Home
+├── about.html        # English — About
+├── support.html      # English — Support
+├── privacy.html      # English — Privacy Policy
+├── pt/
+│   ├── index.html    # Portuguese — Home
+│   ├── about.html    # Portuguese — About
+│   ├── support.html  # Portuguese — Support
+│   └── privacy.html  # Portuguese — Privacy
 ├── css/
-│   └── style.css    # Estilos
-└── img/             # Screenshots (a adicionar)
+│   └── style.css     # Shared styles (Wong/Tol accessible palette)
+├── img/
+│   ├── icon48.png    # Header logo icon
+│   └── icon128.png   # Reserved
+└── README.md
 ```
 
-## Publicação
+## Languages
 
-Esta branch é servida automaticamente pelo GitHub Pages. Para atualizar a landing page, faça push nesta branch.
+- **EN** (default) — Home, About, Support, Privacy
+- **PT** (/pt/) — Portuguese versions with language toggle in header
+
+## Publishing
+
+This branch is served by GitHub Pages. To update, push to this branch.

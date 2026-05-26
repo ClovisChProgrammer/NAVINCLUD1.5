@@ -1,90 +1,100 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Saiba mais sobre o NAVINCLUD — uma extensão Chrome gratuita e open-source para acessibilidade cromática.">
-  <title>Sobre — NAVINCLUD</title>
+  <meta name="description" content="Learn about NAVINCLUD — a free and open-source Chrome extension for color accessibility.">
+  <title>About — NAVINCLUD</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
   <header class="header" role="banner">
     <div class="container">
-      <a href="/Navinclud2026TCC/" class="header-logo"><img src="img/logo.png" alt="NAVINCLUD" height="36"></a>
-      <nav class="header-nav" aria-label="Navegação principal">
-        <a href="/Navinclud2026TCC/">Início</a>
-        <a href="/Navinclud2026TCC/about" class="active">Sobre</a>
-        <a href="/Navinclud2026TCC/support">Suporte</a>
-        <a href="/Navinclud2026TCC/privacy">Privacidade</a>
-      </nav>
+      <a href="/Navinclud2026TCC/" class="header-logo">
+        <img src="img/icon48.png" alt="" aria-hidden="true">
+        <span>NAVINCLUD</span>
+      </a>
+      <div class="header-right">
+        <nav class="header-nav" aria-label="Main navigation">
+          <a href="/Navinclud2026TCC/">Home</a>
+          <a href="/Navinclud2026TCC/about" class="active">About</a>
+          <a href="/Navinclud2026TCC/support">Support</a>
+          <a href="/Navinclud2026TCC/privacy">Privacy</a>
+        </nav>
+        <div class="lang-toggle">
+          <span class="active-lang">EN</span>
+          <span class="sep">|</span>
+          <a href="/Navinclud2026TCC/pt/about">PT</a>
+        </div>
+      </div>
     </div>
   </header>
 
   <main id="main-content" class="container content-page">
-    <h1>Sobre o NAVINCLUD</h1>
-    <p class="subtitle">Tornando a web mais acessível para pessoas com deficiência cromática.</p>
+    <h1>About NAVINCLUD</h1>
+    <p class="subtitle">Making the web more accessible for people with color vision deficiencies.</p>
 
     <section>
-      <h2>O Problema</h2>
-      <p>Aproximadamente <strong>350 milhões de pessoas</strong> no mundo têm alguma forma de daltonismo ou acromatopsia. O espectro de deficiências cromáticas inclui:</p>
+      <h2>The Problem</h2>
+      <p>Approximately <strong>350 million people</strong> worldwide have some form of color blindness or achromatopsia. The spectrum of color vision deficiencies includes:</p>
       <ul>
-        <li><strong>Protanopia/Protanomalia</strong> — dificuldade com tons de vermelho</li>
-        <li><strong>Deuteranopia/Deuteranomalia</strong> — dificuldade com tons de verde</li>
-        <li><strong>Tritanopia/Tritanomalia</strong> — dificuldade com tons de azul</li>
-        <li><strong>Acromatopsia/Acromatomalia</strong> — visão em escala de cinza parcial ou total</li>
+        <li><strong>Protanopia/Protanomaly</strong> — difficulty with red tones</li>
+        <li><strong>Deuteranopia/Deuteranomaly</strong> — difficulty with green tones</li>
+        <li><strong>Tritanopia/Tritanomaly</strong> — difficulty with blue tones</li>
+        <li><strong>Achromatopsia/Achromatomaly</strong> — partial or total grayscale vision</li>
       </ul>
-      <p>Apesar de ser uma condição comum, a maioria dos sites e aplicações não oferece suporte adequado, excluindo uma parcela significativa da população.</p>
+      <p>Despite being a common condition, most websites and applications lack proper support, excluding a significant portion of the population.</p>
     </section>
 
     <section>
-      <h2>A Solução</h2>
-      <p>NAVINCLUD é uma extensão gratuita e <strong>open-source</strong> para Chrome que oferece:</p>
+      <h2>The Solution</h2>
+      <p>NAVINCLUD is a free and <strong>open-source</strong> Chrome extension that offers:</p>
       <ul>
-        <li><strong>Teste diagnóstico</strong> baseado no método Ishihara com 18 placas para identificar o tipo de deficiência cromática</li>
-        <li><strong>Filtros de correção em tempo real</strong> aplicados via SVG <code>feColorMatrix</code> em qualquer página web</li>
-        <li><strong>Calibração científica</strong> de monitor para garantir precisão nos resultados</li>
-        <li><strong>Experiência de navegação</strong> imersiva para demonstrar o impacto dos filtros</li>
-        <li><strong>Privacidade total</strong> — todos os dados processados localmente</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>Tecnologia</h2>
-      <ul>
-        <li><strong>Manifest V3</strong> — API mais moderna e segura para extensões Chrome</li>
-        <li><strong>SVG feColorMatrix</strong> — filtros de cor aplicados via matriz de transformação no DOM</li>
-        <li><strong>Chrome Storage API</strong> — armazenamento local seguro dos resultados</li>
-        <li><strong>WebP</strong> — placas Ishihara otimizadas para carregamento rápido</li>
+        <li><strong>Diagnostic test</strong> based on the Ishihara method with 18 plates to identify the type of color vision deficiency</li>
+        <li><strong>Real-time correction filters</strong> applied via SVG <code>feColorMatrix</code> on any web page</li>
+        <li><strong>Scientific monitor calibration</strong> to ensure accurate results</li>
+        <li><strong>Browsing experience</strong> to demonstrate the impact of filters</li>
+        <li><strong>Total privacy</strong> — all data processed locally</li>
       </ul>
     </section>
 
     <section>
-      <h2>Projeto Acadêmico</h2>
-      <p>O NAVINCLUD foi desenvolvido como Trabalho de Conclusão de Curso na <strong>ETEC Comendador João Rays</strong> (Barra Bonita/SP), sob orientação dos professores da instituição.</p>
+      <h2>Technology</h2>
+      <ul>
+        <li><strong>Manifest V3</strong> — the latest and most secure Chrome extension API</li>
+        <li><strong>SVG feColorMatrix</strong> — color filters applied via transformation matrix on the DOM</li>
+        <li><strong>Chrome Storage API</strong> — secure local storage of results</li>
+        <li><strong>WebP</strong> — optimized Ishihara plates for fast loading</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Academic Project</h2>
+      <p>NAVINCLUD was developed as a Course Completion Project at <strong>ETEC Comendador João Rays</strong> (Barra Bonita/SP, Brazil), under the guidance of the institution's professors.</p>
       <p>
         <span class="badge">TCC</span>
         <span class="badge">ETEC</span>
-        <span class="badge">Acessibilidade</span>
+        <span class="badge">Accessibility</span>
         <span class="badge">Open Source</span>
       </p>
     </section>
 
     <section>
-      <h2>Licença</h2>
-      <p>Este projeto é distribuído sob a licença <strong>MIT</strong>, permitindo uso, modificação e distribuição livre, desde que mantidos os créditos autorais.</p>
-      <p><a href="https://github.com/ClovisChProgrammer/Navinclud2026TCC" target="_blank" rel="noopener">Repositório no GitHub</a></p>
+      <h2>License</h2>
+      <p>This project is distributed under the <strong>MIT license</strong>, allowing free use, modification, and distribution as long as credit is maintained.</p>
+      <p><a href="https://github.com/ClovisChProgrammer/Navinclud2026TCC" target="_blank" rel="noopener">Repository on GitHub</a></p>
     </section>
   </main>
 
   <footer class="footer" role="contentinfo">
     <div class="container">
-      <span>&copy; 2026 NAVINCLUD. Licença MIT.</span>
-      <nav class="footer-links" aria-label="Links do rodapé">
-        <a href="/Navinclud2026TCC/">Início</a>
-        <a href="/Navinclud2026TCC/support">Suporte</a>
-        <a href="/Navinclud2026TCC/privacy">Privacidade</a>
+      <span>&copy; 2026 NAVINCLUD. MIT License.</span>
+      <nav class="footer-links" aria-label="Footer links">
+        <a href="/Navinclud2026TCC/">Home</a>
+        <a href="/Navinclud2026TCC/support">Support</a>
+        <a href="/Navinclud2026TCC/privacy">Privacy</a>
         <a href="https://github.com/ClovisChProgrammer/Navinclud2026TCC" target="_blank" rel="noopener">GitHub</a>
       </nav>
     </div>

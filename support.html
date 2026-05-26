@@ -1,121 +1,131 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Suporte, FAQ e contato para a extensão NAVINCLUD de acessibilidade cromática.">
-  <title>Suporte — NAVINCLUD</title>
+  <meta name="description" content="Support, FAQ and contact for the NAVINCLUD color accessibility Chrome extension.">
+  <title>Support — NAVINCLUD</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
   <header class="header" role="banner">
     <div class="container">
-      <a href="/Navinclud2026TCC/" class="header-logo"><img src="img/logo.png" alt="NAVINCLUD" height="36"></a>
-      <nav class="header-nav" aria-label="Navegação principal">
-        <a href="/Navinclud2026TCC/">Início</a>
-        <a href="/Navinclud2026TCC/about">Sobre</a>
-        <a href="/Navinclud2026TCC/support" class="active">Suporte</a>
-        <a href="/Navinclud2026TCC/privacy">Privacidade</a>
-      </nav>
+      <a href="/Navinclud2026TCC/" class="header-logo">
+        <img src="img/icon48.png" alt="" aria-hidden="true">
+        <span>NAVINCLUD</span>
+      </a>
+      <div class="header-right">
+        <nav class="header-nav" aria-label="Main navigation">
+          <a href="/Navinclud2026TCC/">Home</a>
+          <a href="/Navinclud2026TCC/about">About</a>
+          <a href="/Navinclud2026TCC/support" class="active">Support</a>
+          <a href="/Navinclud2026TCC/privacy">Privacy</a>
+        </nav>
+        <div class="lang-toggle">
+          <span class="active-lang">EN</span>
+          <span class="sep">|</span>
+          <a href="/Navinclud2026TCC/pt/support">PT</a>
+        </div>
+      </div>
     </div>
   </header>
 
   <main id="main-content" class="container content-page">
-    <h1>Suporte</h1>
-    <p class="subtitle">Dúvidas frequentes, guia de uso e canais de contato.</p>
+    <h1>Support</h1>
+    <p class="subtitle">Frequently asked questions, usage guide, and contact channels.</p>
 
     <section>
-      <h2>Perguntas Frequentes</h2>
+      <h2>Frequently Asked Questions</h2>
 
       <div class="faq-item">
-        <h3>O NAVINCLUD funciona em qualquer site?</h3>
-        <p>Sim. Os filtros são aplicados em qualquer página web. O content script é injetado em todas as URLs e o filtro é aplicado diretamente no HTML via SVG <code>feColorMatrix</code>.</p>
+        <h3>Does NAVINCLUD work on any website?</h3>
+        <p>Yes. Filters are applied to any web page. The content script runs on all URLs and the filter is applied directly to the HTML via SVG <code>feColorMatrix</code>.</p>
       </div>
 
       <div class="faq-item">
-        <h3>Como faço o teste de daltonismo?</h3>
-        <p>Instale a extensão, clique no ícone NAVINCLUD na barra de ferramentas e selecione "INICIAR TESTE". Siga as instruções na tela: serão 18 placas com 15 segundos cada. Ao final, você receberá um diagnóstico detalhado.</p>
+        <h3>How do I take the color blindness test?</h3>
+        <p>Install the extension, click the NAVINCLUD icon on the toolbar, and select "INICIAR TESTE" (Start Test). Follow the on-screen instructions: 18 plates with 15 seconds each. At the end, you will receive a detailed diagnosis.</p>
       </div>
 
       <div class="faq-item">
-        <h3>Preciso calibrar meu monitor?</h3>
-        <p>Recomendamos calibrar antes do teste para garantir precisão. Clique em "CALIBRAR MONITOR" no popup e siga o guia com ajustes de D65 (6500K), Gamma 2.2 e testes visuais.</p>
+        <h3>Do I need to calibrate my monitor?</h3>
+        <p>We recommend calibrating before the test to ensure accuracy. Click "CALIBRAR MONITOR" (Calibrate Monitor) in the popup and follow the guide with D65 (6500K), Gamma 2.2 adjustments and visual tests.</p>
       </div>
 
       <div class="faq-item">
-        <h3>Meus dados são enviados para algum servidor?</h3>
-        <p>Não. Todos os dados de teste e preferências são armazenados exclusivamente no <code>chrome.storage.local</code> do seu navegador. Nada é enviado para servidores externos. Consulte nossa <a href="/Navinclud2026TCC/privacy">política de privacidade</a>.</p>
+        <h3>Is my data sent to any server?</h3>
+        <p>No. All test data and preferences are stored exclusively in your browser's <code>chrome.storage.local</code>. Nothing is sent to external servers. See our <a href="/Navinclud2026TCC/privacy">privacy policy</a>.</p>
       </div>
 
       <div class="faq-item">
-        <h3>Como exportar meus resultados?</h3>
-        <p>No popup da extensão, clique em "EXPORTAR TODOS OS TESTES". O fluxo de confirmação em 3 etapas garante que você está ciente da extração. Os dados são salvos na pasta de downloads como um arquivo JSON.</p>
+        <h3>How do I export my results?</h3>
+        <p>In the extension's popup, click "EXPORTAR TODOS OS TESTES" (Export All Tests). The 3-step confirmation flow ensures you are aware of the extraction. Data is saved to your Downloads folder as a JSON file.</p>
       </div>
 
       <div class="faq-item">
-        <h3>O NAVINCLUD é gratuito?</h3>
-        <p>Sim, completamente gratuito e open-source sob licença MIT. Não há planos pagos, assinaturas ou anúncios.</p>
+        <h3>Is NAVINCLUD free?</h3>
+        <p>Yes, completely free and open-source under the MIT license. No paid plans, subscriptions, or ads.</p>
       </div>
 
       <div class="faq-item">
-        <h3>O teste substitui uma consulta oftalmológica?</h3>
-        <p>Não. O teste tem finalidade educacional e de conscientização. Para diagnóstico clínico, consulte um oftalmologista.</p>
+        <h3>Does the test replace an eye exam?</h3>
+        <p>No. The test has educational and awareness purposes. For clinical diagnosis, consult an ophthalmologist.</p>
       </div>
     </section>
 
     <section>
-      <h2>Guia Rápido</h2>
+      <h2>Quick Start Guide</h2>
 
       <div class="support-card">
-        <h3>1. Instalação</h3>
-        <p>Adicione a extensão pela Chrome Web Store (link em breve). Após instalada, o ícone NAVINCLUD aparecerá na barra de ferramentas.</p>
+        <h3>1. Installation</h3>
+        <p>Add the extension from the Chrome Web Store (link coming soon). Once installed, the NAVINCLUD icon will appear on the toolbar.</p>
       </div>
 
       <div class="support-card">
-        <h3>2. Calibração</h3>
-        <p>Acesse o popup, clique em "CALIBRAR MONITOR" e siga as instruções para ajustar temperatura de cor, gamma e luminosidade.</p>
+        <h3>2. Calibration</h3>
+        <p>Open the popup, click "CALIBRAR MONITOR" and follow the instructions to adjust color temperature, gamma and brightness.</p>
       </div>
 
       <div class="support-card">
-        <h3>3. Teste</h3>
-        <p>Clique em "INICIAR TESTE". Responda às 18 placas Ishihara dentro do tempo limite. Ao final, veja seu diagnóstico detalhado.</p>
+        <h3>3. Test</h3>
+        <p>Click "INICIAR TESTE". Answer all 18 Ishihara plates within the time limit. At the end, see your detailed diagnosis.</p>
       </div>
 
       <div class="support-card">
-        <h3>4. Filtro</h3>
-        <p>Com o diagnóstico, selecione o filtro correspondente no popup. Ajuste intensidade e shift conforme sua preferência. O filtro é aplicado instantaneamente em todas as páginas.</p>
+        <h3>4. Filter</h3>
+        <p>With the diagnosis, select the corresponding filter in the popup. Adjust intensity and shift as needed. The filter applies instantly to all pages.</p>
       </div>
     </section>
 
     <section>
-      <h2>Reportar Bug ou Sugerir Melhoria</h2>
-      <p>Use o <strong>GitHub Issues</strong> para reportar problemas ou sugerir funcionalidades. Inclua o máximo de detalhes possível:</p>
+      <h2>Report a Bug or Suggest a Feature</h2>
+      <p>Use <strong>GitHub Issues</strong> to report problems or suggest features. Please include as much detail as possible:</p>
       <ul>
-        <li>Versão do Chrome</li>
-        <li>Sistema operacional</li>
-        <li>Passos para reproduzir (se for bug)</li>
-        <li>Capturas de tela (se aplicável)</li>
+        <li>Chrome version</li>
+        <li>Operating system</li>
+        <li>Steps to reproduce (if bug)</li>
+        <li>Screenshots (if applicable)</li>
       </ul>
-      <p><a href="https://github.com/ClovisChProgrammer/Navinclud2026TCC/issues" target="_blank" rel="noopener" class="btn btn-outline">Abrir Issue no GitHub</a></p>
+      <p><a href="https://github.com/ClovisChProgrammer/Navinclud2026TCC/issues" target="_blank" rel="noopener" class="btn btn-outline">Open an Issue on GitHub</a></p>
     </section>
 
     <section class="contact-info">
-      <h3>Contato</h3>
-      <p>Para assuntos relacionados à privacidade ou comunicação direta:</p>
-      <p><strong>Desenvolvedores:</strong> Clóvis Ch. e Alberto Bia.</p>
+      <h3>Contact</h3>
+      <p>For privacy-related matters or direct communication:</p>
+      <p><strong>Developers:</strong> Clóvis Ch. and Alberto Bia.</p>
       <p><a href="https://github.com/ClovisChProgrammer" target="_blank" rel="noopener">GitHub: ClovisChProgrammer</a></p>
     </section>
   </main>
 
   <footer class="footer" role="contentinfo">
     <div class="container">
-      <span>&copy; 2026 NAVINCLUD. Licença MIT.</span>
-      <nav class="footer-links" aria-label="Links do rodapé">
-        <a href="/Navinclud2026TCC/">Início</a>
-        <a href="/Navinclud2026TCC/about">Sobre</a>
-        <a href="/Navinclud2026TCC/privacy">Privacidade</a>
+      <span>&copy; 2026 NAVINCLUD. MIT License.</span>
+      <nav class="footer-links" aria-label="Footer links">
+        <a href="/Navinclud2026TCC/">Home</a>
+        <a href="/Navinclud2026TCC/about">About</a>
+        <a href="/Navinclud2026TCC/privacy">Privacy</a>
         <a href="https://github.com/ClovisChProgrammer/Navinclud2026TCC" target="_blank" rel="noopener">GitHub</a>
       </nav>
     </div>
