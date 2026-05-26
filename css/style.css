@@ -188,6 +188,13 @@ li {
   flex-shrink: 0;
 }
 
+.lang-flag {
+  display: inline-block;
+  font-size: 1.15em;
+  line-height: 1;
+  vertical-align: -0.1em;
+}
+
 .lang-toggle a {
   color: var(--color-text-secondary);
   text-decoration: none;
