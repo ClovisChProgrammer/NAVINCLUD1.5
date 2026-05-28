@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://clovischprogrammer.github.io/Navinclud2026TCC/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clovischprogrammer.github.io/Navinclud2026TCC/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://clovischprogrammer.github.io/Navinclud2026TCC/pt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clovischprogrammer.github.io/Navinclud2026TCC/"/>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://clovischprogrammer.github.io/Navinclud2026TCC/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clovischprogrammer.github.io/Navinclud2026TCC/about"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://clovischprogrammer.github.io/Navinclud2026TCC/pt/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clovischprogrammer.github.io/Navinclud2026TCC/about"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://clovischprogrammer.github.io/Navinclud2026TCC/support</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clovischprogrammer.github.io/Navinclud2026TCC/support"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://clovischprogrammer.github.io/Navinclud2026TCC/pt/support"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clovischprogrammer.github.io/Navinclud2026TCC/support"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://clovischprogrammer.github.io/Navinclud2026TCC/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://clovischprogrammer.github.io/Navinclud2026TCC/privacy"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://clovischprogrammer.github.io/Navinclud2026TCC/pt/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://clovischprogrammer.github.io/Navinclud2026TCC/privacy"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+</urlset>

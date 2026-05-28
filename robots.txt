@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://clovischprogrammer.github.io/Navinclud2026TCC/sitemap.xml
