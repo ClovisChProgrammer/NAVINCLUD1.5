@@ -272,13 +272,6 @@ document.addEventListener('DOMContentLoaded', function() {
                       chrome.windows.remove(win.id);
                     });
                   });
-                  chrome.tabs.query({}, function(tabs) {
-                    tabs.forEach(function(t) {
-                      if (t.url && t.url.startsWith('http')) {
-                        chrome.tabs.sendMessage(t.id, { action: 'applyNavInclud', settings: finalSettings }).catch(function(){});
-                      }
-                    });
-                  });
                 });
               });
             });
@@ -394,18 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   document.getElementById('apply-wizard').onclick = function() {
-    chrome.storage.local.get(['navIncludSettings'], function(res) {
-      var settings = res.navIncludSettings || { type: 'none', intensity: 100, shift: 0.5, enabled: true };
-      chrome.tabs.query({}, function(tabs) {
-        tabs.forEach(function(t) {
-          if (t.url && t.url.startsWith('http')) {
-            chrome.tabs.sendMessage(t.id, { action: 'applyNavInclud', settings: settings }).catch(function(){});
-            chrome.tabs.reload(t.id);
-          }
-        });
-      });
-      setTimeout(function() { window.close(); }, 300);
-    });
+    setTimeout(function() { window.close(); }, 300);
   };
 
   document.getElementById('recalibrate-btn').onclick = function() {

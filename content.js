@@ -76,8 +76,10 @@ function calculateMatrix(type, intensity, shift) {
   ].join(', ');
 }
 
-chrome.runtime.onMessage.addListener((m) => {
-  if (m.action === 'applyNavInclud') applyNavIncludFilter(m.settings);
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local' && changes.navIncludSettings) {
+    applyNavIncludFilter(changes.navIncludSettings.newValue);
+  }
 });
 
 chrome.storage.local.get(['navIncludSettings'], (res) => {

@@ -38,15 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     elements.intensityVal.textContent = s.intensity + '%';
     elements.shiftVal.textContent = s.shift.toFixed(2);
 
-    chrome.storage.local.set({ navIncludSettings: s }, function() {
-      chrome.tabs.query({}, function(tabs) {
-        tabs.forEach(function(t) {
-          if (t.url && t.url.startsWith('http')) {
-            chrome.tabs.sendMessage(t.id, { action: 'applyNavInclud', settings: s }).catch(function(){});
-          }
-        });
-      });
-    });
+    chrome.storage.local.set({ navIncludSettings: s });
   };
 
   function updateTestCount() {
