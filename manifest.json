@@ -4,9 +4,8 @@
   "version": "1.3",
   "description": "Filtros dinâmicos para Daltonismo e Acromatopsia.",
   "homepage_url": "https://clovischprogrammer.github.io/Navinclud2026TCC/",
-  "permissions": ["storage", "activeTab", "downloads"],
+  "permissions": ["storage", "downloads"],
   "host_permissions": ["<all_urls>"],
-  "privacy_policy": "https://clovischprogrammer.github.io/Navinclud2026TCC/privacy",
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
