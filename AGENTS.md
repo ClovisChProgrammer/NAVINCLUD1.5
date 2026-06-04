@@ -99,6 +99,18 @@ Se o HD for desconectado ou o computador desligar no meio da simulação:
 3. Execute: `python simulate_5salas_testes.py --resume`
 4. O simulador automaticamente pula os alunos já feitos e continua do ponto certo
 
+## CWS Submission Checklist (promovido de .learnings/LRN-20260602-002)
+Antes de cada submissão ao Chrome Web Store:
+1. Auditar `permissions[]` — remover qualquer permissão não utilizada (especialmente `activeTab`, `tabs`, `scripting`)
+2. Verificar `privacy_policy` — **não** é chave válida do manifest MV3; configurar no CWS Developer Dashboard
+3. Garantir **zero scripts remotos** — todo código deve estar bundled na extensão (sem CDN, sem scripts externos)
+4. Rodar `build-cws-zip.ps1` para gerar ZIP limpo
+5. Verificar `host_permissions` — usar escopo mínimo necessário (<all_urls> é aceito, mas justificar)
+6. Confirmar versão bump correta no manifest.json
+
+## Session Log Discipline (promovido de .learnings/ERR-20260602-001)
+Atualizar `Andamentos KAI.md` ao final de **cada sessão**, mesmo que breve. Mínimo: data, resumo dos commits/tarefas, estado atual.
+
 ## Known Issues
 - `python simulate_5salas_testes.py` (modo realista) leva ~3h para 100 alunos
 - ChromeDriver 148.0.7778.178 travou com versão CfT diferente — manter sincronizado
