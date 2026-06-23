@@ -70,3 +70,11 @@ consultas_salvas/
 
 # CWS build artifact
 navinclud-cws.zip
+
+# Exportacoes de dados agregados
+export/
+stats_output/
+stats_output2/
+
+# JSON com tempos simulados por placa
+navinclud_com_tempos.json
