@@ -1,5 +1,9 @@
 # Embasamento Científico — Matrizes de Correção de Cores
 
+> **Aviso importante:** Esta ferramenta possui caráter exclusivamente educacional e de simulação. Não substitui exames oftalmológicos ou consultas com profissionais de saúde qualificados. Não constitui diagnóstico médico.
+>
+> O nome "Ishihara" é utilizado como referência de metodologia científica, não como identificação do produto. Este projeto foi inspirado na metodologia de **Shinobu Ishihara**, oftalmologista japonês que desenvolveu o teste de percepção cromática em 1917. A implementação aqui presente utiliza um conjunto reduzido de 18 pranchas por decisão de design e escopo de software, não replicando o exame clínico completo (que utiliza 24 a 38 pranchas).
+
 ## 1. Fundamentos da Visão de Cores
 
 A visão de cores humana baseia-se na existência de três tipos de cones na retina, cada um sensível a uma faixa espectral distinta:

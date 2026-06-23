@@ -502,6 +502,50 @@ O script `build-cws-zip.ps1` gera o pacote ZIP para submissão.
 
 ---
 
+## 9. Recomendações Jurídicas e Éticas
+
+### 9.1 Termo de Isenção de Responsabilidade (Disclaimer)
+
+Em conformidade com boas práticas de desenvolvimento de ferramentas educacionais, o NAVINCLUD exibe em seu site (rodapé de todas as páginas) e documentação o seguinte aviso:
+
+> **Esta ferramenta possui caráter exclusivamente educacional e de simulação. Não substitui exames oftalmológicos ou consultas com profissionais de saúde qualificados. Não constitui diagnóstico médico.**
+
+Este disclaimer é necessário porque:
+- A ferramenta não passa por validação clínica regulatória (ANVISA, FDA)
+- O diagnóstico de daltonismo exige equipamentos e procedimentos padronizados que a extensão não replica
+- Menores de idade são o público-alvo dos testes escolares, exigindo proteção adicional
+
+### 9.2 Referência Científica — Uso do nome "Ishihara"
+
+O nome "Ishihara" é tratado exclusivamente como **referência de metodologia científica**, não como identificação do produto. Em todas as menções:
+
+- **Correto:** "Inspirado na metodologia de Shinobu Ishihara..."
+- **Incorreto:** "Teste de Ishihara do NAVINCLUD" ou "Ishihara NAVINCLUD"
+
+Esta distinção é importante por:
+1. **Direitos autorais e marca:** As placas originais de Ishihara são protegidas. A NAVINCLUD usa implementação digital própria inspirada no método, não as placas originais.
+2. **Precisão científica:** O teste clínico completo possui 24 a 38 pranchas com padrões cromáticos específicos calibrados para cada tipo de deficit. A NAVINCLUD utiliza 18 pranchas, uma quantidade reduzida por decisão de design.
+3. **Transparência com o usuário:** Evitar que o usuário acredite estar recebendo um diagnóstico clínico equivalente ao exame oftalmológico.
+
+### 9.3 Diferenciação — 18 pranchas como decisão de design
+
+A escolha por 18 pranchas (2 de cada um dos 9 tipos de deficit) é uma **decisão explícita de design e escopo de projeto de software**, não uma limitação técnica:
+
+| Aspecto | Exame clínico completo | NAVINCLUD |
+|---------|------------------------|-----------|
+| Quantidade de pranchas | 24–38 (variável) | 18 (fixo, 2 por tipo) |
+| Finalidade | Diagnóstico clínico | Exploração pedagógica |
+| Validação | Estudos clínicos duplo-cego | Validação empírica (93 alunos) |
+| Regulamentação | ANVISA/FDA | Sem regulamentação (software educacional) |
+| Profissional | Aplicado por oftalmologista | Autoaplicado com supervisão |
+
+**No TCC**, esta diferenciação deve ser apresentada na seção de metodologia, deixando claro que:
+- O escopo é o desenvolvimento de um **software educacional**, não de um dispositivo médico
+- As 18 pranchas são suficientes para demonstrar o conceito de triagem cromática
+- A validação empírica com 93 alunos atesta o funcionamento do software, não a precisão diagnóstica
+
+---
+
 ## Referências
 
 1. **Viénot, F., Brettel, H., & Mollon, J. D.** (1999). Digital video colourmaps for checking the legibility of displays by dichromats. *Color Research & Application*, 24(4), 243–252.

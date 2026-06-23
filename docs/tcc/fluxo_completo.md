@@ -1,5 +1,9 @@
 # Fluxo Completo do NAVINCLUD — Da Extensão ao Relatório Final
 
+> **Aviso importante:** Esta ferramenta possui caráter exclusivamente educacional e de simulação. Não substitui exames oftalmológicos ou consultas com profissionais de saúde qualificados. Não constitui diagnóstico médico.
+>
+> **Referência metodológica:** O teste é inspirado na metodologia de **Shinobu Ishihara**, tratada como referência científica e não como identificação do produto. A versão de 18 pranchas é uma decisão de design e escopo do projeto de software, não uma tentativa de replicar o exame clínico completo (24–38 pranchas).
+
 ## 1. Visão Geral
 
 ```
