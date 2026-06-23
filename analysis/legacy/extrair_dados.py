@@ -40,12 +40,15 @@ class TypoCorrector:
             return cls.TYPO_MAP.get(obj, obj)
         return obj
 
-CHROMEDRIVER_PATH = os.path.join(os.path.dirname(__file__), "chromedriver-win64", "chromedriver.exe")
-CFT_DIR = os.path.join(os.path.dirname(__file__), "chrome_for_testing")
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.join(_SCRIPT_DIR, "..", "..")
+
+CHROMEDRIVER_PATH = os.path.join(_PROJECT_ROOT, "chromedriver-win64", "chromedriver.exe")
+CFT_DIR = os.path.join(_PROJECT_ROOT, "chrome_for_testing")
 CFT_EXE = os.path.join(CFT_DIR, "chrome-win64", "chrome.exe")
-TEMP_PROFILE_DIR = os.path.join(os.path.dirname(__file__), "perfil_temporario")
-EXT_ID_FILE = os.path.join(os.path.dirname(__file__), "extension_id.txt")
-RESULTADOS_DIR = os.path.join(os.path.dirname(__file__), "resultados")
+TEMP_PROFILE_DIR = os.path.join(_PROJECT_ROOT, "perfil_temporario")
+EXT_ID_FILE = os.path.join(_PROJECT_ROOT, "extension_id.txt")
+RESULTADOS_DIR = os.path.join(_PROJECT_ROOT, "resultados")
 
 
 def kill_chrome_processes():

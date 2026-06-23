@@ -423,13 +423,15 @@ if __name__ == "__main__":
     print("=" * 60)
     
     import sys
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'gui'))
+    _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    _PROJECT_ROOT = os.path.join(_SCRIPT_DIR, "..", "..")
+    sys.path.insert(0, os.path.join(_PROJECT_ROOT, 'gui'))
     
     try:
         from nav_query import NavQuery
         
         nq = NavQuery()
-        resultados_dir = os.path.join(os.path.dirname(__file__), "resultados")
+        resultados_dir = os.path.join(_PROJECT_ROOT, "resultados")
         
         if os.path.exists(resultados_dir):
             print(f"\nCarregando dados de: {resultados_dir}")

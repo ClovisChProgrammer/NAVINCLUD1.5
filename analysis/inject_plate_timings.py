@@ -5,9 +5,9 @@ Le o JSON agregado, gera timings individuais para cada placa (1-18)
 baseados no avgReactionTimeMs real + erros por tipo de defeito.
 
 Uso:
-  python inject_plate_timings.py
-  python inject_plate_timings.py --input export/navinclud_agregado.json
-  python inject_plate_timings.py --output export/navinclud_com_tempos.json
+  python analysis/inject_plate_timings.py
+  python analysis/inject_plate_timings.py --input export/navinclud_agregado.json
+  python analysis/inject_plate_timings.py --output export/navinclud_com_tempos.json
 """
 
 import os, sys, json, argparse
@@ -142,11 +142,14 @@ def validate_timings(alunos):
         print(f'Erro maximo: {max(diffs):.1f}ms')
 
 
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.join(_SCRIPT_DIR, "..")
+
 def main():
     parser = argparse.ArgumentParser(description='NAVINCLUD - Simulacao de Tempo por Placa')
-    parser.add_argument('--input', default='export/navinclud_agregado.json',
+    parser.add_argument('--input', default=os.path.join(_PROJECT_ROOT, 'export', 'navinclud_agregado.json'),
                         help='JSON agregado de entrada')
-    parser.add_argument('--output', default='export/navinclud_com_tempos.json',
+    parser.add_argument('--output', default=os.path.join(_PROJECT_ROOT, 'export', 'navinclud_com_tempos.json'),
                         help='JSON de saida com tempos simulados')
     args = parser.parse_args()
 

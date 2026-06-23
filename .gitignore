@@ -26,7 +26,7 @@ images/4.png
 images/5.png
 
 # Test data exports
-navinclud_10_testes_*.json
+navinclud_*_testes_*.json
 navinclud_test_sample.*
 00TESTES/
 
@@ -54,8 +54,8 @@ resultados/
 .opencode/
 *.local.md
 
-# Andamentos KAI (nao commitados por padrao - esta no .gitignore)
-Andamentos KAI.md
+# Andamentos KAI (nao commitados por padrao)
+docs/Andamentos KAI.md
 
 # Scripts duplicados/antigos
 simulate_teste_5salas.py
@@ -69,7 +69,7 @@ teste_grafico_*
 consultas_salvas/
 
 # CWS build artifact
-navinclud-cws.zip
+artifacts/navinclud-cws.zip
 
 # Exportacoes de dados agregados
 export/

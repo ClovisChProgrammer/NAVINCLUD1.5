@@ -59,7 +59,9 @@ def main():
     print("  CONVERSOR: resultados_*.json -> navinclud_*.json")
     print("=" * 60)
 
-    resultados_dir = os.path.join(os.path.dirname(__file__), "resultados")
+    _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    _PROJECT_ROOT = os.path.join(_SCRIPT_DIR, "..", "..")
+    resultados_dir = os.path.join(_PROJECT_ROOT, "resultados")
     
     if not os.path.isdir(resultados_dir):
         print(f"ERRO: Diretorio nao encontrado: {resultados_dir}")

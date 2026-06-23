@@ -15,6 +15,9 @@ from typing import Optional, Any, Union, Literal, Callable
 from enum import Enum
 from collections import defaultdict
 
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.join(_SCRIPT_DIR, "..", "..")
+
 
 class FilterOperator(Enum):
     EQ = "="
@@ -497,7 +500,7 @@ class NavQuery:
         self._cache_dirty: bool = True
         
         self._query_dir = os.path.join(
-            os.path.dirname(__file__),
+            _PROJECT_ROOT,
             "consultas_salvas"
         )
         os.makedirs(self._query_dir, exist_ok=True)

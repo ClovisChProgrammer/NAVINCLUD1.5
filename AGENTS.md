@@ -27,27 +27,56 @@
 
 ## Architecture
 ```
-simulate_5salas_testes.py  ← script principal
-├── weighted_age()         ← idade ponderada por moda
-├── generate_students()    ← gera 100 alunos com sexo/idade/defeitos
-├── pick_perception()      ← 1-3 opções sem Facil+Dificil
-├── ensure_chrome_for_testing() ← baixa CfT se necessário
-├── kill_chrome_processes()
-├── setup_driver(cft_exe)  ← inicia CfT + extensão
-├── get_extension_id()     ← detecta ID via shadow DOM (polling)
-├── run_single_test()      ← fluxo completo de 1 aluno
-│   ├── Abre wizard em nova JANELA
-│   ├── Preenche pre-teste
-│   ├── 18 placas Ishihara (clique com delay)
-│   ├── Percepção (checkboxes)
-│   ├── [se normal] Post-test → Parabéns → NOVO TESTE
-│   ├── [se deficiente] Convite → experience.html
-│   │   ├── Fecha wizard, navega p/ experience.html
-│   │   ├── Exit experience → questionário → save
-│   │   └── about:blank (evita thankyou fechar janela)
-│   └── Retorna True/False
-├── save/load_progress()
-└── main()
+NAVINCLUD2026TCC/
+├── extension/               ← Chrome Extension (código-fonte)
+│   ├── manifest.json, popup.*, wizard.*, calibrate.*, experience.*
+│   ├── background.js, content.js, images/ (18 placas .webp)
+│   └── icons/
+├── analysis/                ← Pipeline de análise estatística
+│   ├── aggregate_results.py ← Agrega JSONs, padroniza, exporta
+│   ├── inject_plate_timings.py ← Simula timings por placa
+│   ├── stats_navinclud.py   ← Gráficos + relatórios .md
+│   └── legacy/              ← Scripts preservados (não mais ativos)
+├── simulation/              ← Simulador automatizado (Selenium)
+│   └── simulate_5salas_testes.py
+├── docs/                    ← Documentação TCC + pesquisa
+│   ├── APRESENTACAO.md, fluxograma_navinclud.md, etc.
+│   ├── notes/               ← Anotações (txt)
+│   └── DocsPesq/            ← Termos, formulários de pesquisa
+├── branding/                ← Logos, assets visuais
+│   └── LOGOMARCA/
+├── artifacts/               ← Gerados (gitignorados)
+│   └── cws/, snapshots/
+├── resultados/              ← Dados brutos de teste (gitignorados)
+├── export/                  ← Dados agregados exportados (gitignorados)
+├── stats_output/            ← Gráficos gerados (gitignorados)
+├── chromedriver-win64/      ← ChromeDriver (ferramenta externa)
+├── chrome_for_testing/      ← CfT (gitignorado, baixado)
+└── perfil_temporario/       ← Perfil Chrome simulação (gitignorado)
+```
+
+### simulate_5salas_testes.py (fluxo interno)
+```
+weighted_age()         ← idade ponderada por moda
+generate_students()    ← gera 100 alunos com sexo/idade/defeitos
+pick_perception()      ← 1-3 opções sem Facil+Dificil
+ensure_chrome_for_testing() ← baixa CfT se necessário
+kill_chrome_processes()
+setup_driver(cft_exe)  ← inicia CfT + extensão
+get_extension_id()     ← detecta ID via shadow DOM (polling)
+run_single_test()      ← fluxo completo de 1 aluno
+├── Abre wizard em nova JANELA
+├── Preenche pre-teste
+├── 18 placas Ishihara (clique com delay)
+├── Percepção (checkboxes)
+├── [se normal] Post-test → Parabéns → NOVO TESTE
+├── [se deficiente] Convite → experience.html
+│   ├── Fecha wizard, navega p/ experience.html
+│   ├── Exit experience → questionário → save
+│   └── about:blank (evita thankyou fechar janela)
+└── Retorna True/False
+save/load_progress()
+main()
 ```
 
 ## Defeitos por Sala
@@ -71,19 +100,19 @@ simulate_5salas_testes.py  ← script principal
 ## Running
 ```powershell
 # Teste rapido (reacoes 0.5-2s):
-python simulate_5salas_testes.py --fast
+python simulation/simulate_5salas_testes.py --fast
 
 # Simulacao completa (reacoes realistas 2-11s, ~3h):
-python simulate_5salas_testes.py
+python simulation/simulate_5salas_testes.py
 
 # RETOMAR de onde parou (preserva perfil + progresso):
-python simulate_5salas_testes.py --resume
+python simulation/simulate_5salas_testes.py --resume
 
 # Retomar pulando X alunos (ex: pulando 73 primeiros):
-python simulate_5salas_testes.py --resume --skip 73
+python simulation/simulate_5salas_testes.py --resume --skip 73
 
 # Usar seed diferente para reprodutibilidade:
-python simulate_5salas_testes.py --seed 12345
+python simulation/simulate_5salas_testes.py --seed 12345
 ```
 
 ## Novas Funcionalidades (Retomo)
@@ -96,7 +125,7 @@ python simulate_5salas_testes.py --seed 12345
 Se o HD for desconectado ou o computador desligar no meio da simulação:
 1. Os dados dos alunos já testados permanecem no `perfil_temporario/`
 2. O arquivo `simulacao_progresso.json` tem o número exato de alunos completados
-3. Execute: `python simulate_5salas_testes.py --resume`
+3. Execute: `python simulation/simulate_5salas_testes.py --resume`
 4. O simulador automaticamente pula os alunos já feitos e continua do ponto certo
 
 ## CWS Submission Checklist (promovido de .learnings/LRN-20260602-002)
@@ -112,6 +141,6 @@ Antes de cada submissão ao Chrome Web Store:
 Atualizar `Andamentos KAI.md` ao final de **cada sessão**, mesmo que breve. Mínimo: data, resumo dos commits/tarefas, estado atual.
 
 ## Known Issues
-- `python simulate_5salas_testes.py` (modo realista) leva ~3h para 100 alunos
+- `python simulation/simulate_5salas_testes.py` (modo realista) leva ~3h para 100 alunos
 - ChromeDriver 148.0.7778.178 travou com versão CfT diferente — manter sincronizado
 - Experience popup do wizard.js fecha com `chrome.windows.remove()` — janela separada do Selenium sobrevive

@@ -5,9 +5,9 @@ Le o JSON agregado, oferece selecao interativa de campos,
 gera graficos (matplotlib/seaborn) e relatorios .md.
 
 Uso:
-  python stats_navinclud.py
-  python stats_navinclud.py --json export/navinclud_agregado.json
-  python stats_navinclud.py --auto --fields turma,sexo,idade --output ambos
+  python analysis/stats_navinclud.py
+  python analysis/stats_navinclud.py --json export/navinclud_agregado.json
+  python analysis/stats_navinclud.py --auto --fields turma,sexo,idade --output ambos
 """
 
 import os, sys, json, argparse
@@ -556,12 +556,15 @@ def generate_plate_timing_graphs(alunos, output_dir):
 
 # ── MAIN ───────────────────────────────────────────────────────
 
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.join(_SCRIPT_DIR, "..")
+
 def main():
     parser = argparse.ArgumentParser(description='NAVINCLUD - Estatisticas e Graficos')
-    parser.add_argument('--json', default='export/navinclud_agregado.json',
-                        help='Caminho do JSON agregado (default: export/navinclud_agregado.json)')
-    parser.add_argument('--output', default='stats_output',
-                        help='Diretorio de saida (default: stats_output)')
+    parser.add_argument('--json', default=os.path.join(_PROJECT_ROOT, 'export', 'navinclud_agregado.json'),
+                        help='Caminho do JSON agregado')
+    parser.add_argument('--output', default=os.path.join(_PROJECT_ROOT, 'stats_output'),
+                        help='Diretorio de saida')
     parser.add_argument('--auto', action='store_true',
                         help='Modo automatico (sem interacao)')
     parser.add_argument('--fields', default='',

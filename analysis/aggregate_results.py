@@ -5,9 +5,9 @@ Lê todos os arquivos JSON de uma pasta, padroniza turmas,
 e exporta dados estruturados (JSON + CSV) para análise estatística.
 
 Uso:
-  python aggregate_results.py <diretorio>
-  python aggregate_results.py <diretorio> --export <pasta_saida>
-  python aggregate_results.py <diretorio> -o relatorio.txt
+  python analysis/aggregate_results.py <diretorio>
+  python analysis/aggregate_results.py <diretorio> --export <pasta_saida>
+  python analysis/aggregate_results.py <diretorio> -o relatorio.txt
 """
 
 import os, json, csv, argparse, re, sys, uuid

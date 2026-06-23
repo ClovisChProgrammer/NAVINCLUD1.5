@@ -3,7 +3,7 @@
 NAVINCLUD - Simulador de Testes para 5 Salas (100 alunos)
 Usa Chrome for Testing e chromedriver.
 
-Uso: python simulate_5salas_testes.py [opcoes]
+Uso: python simulation/simulate_5salas_testes.py [opcoes]
   --fast          reacoes rapidas (0.5-2s) para testar fluxo
   --resume        NAO deleta perfil existente (continua de onde parou)
   --skip N        pula os primeiros N alunos (ex: --skip 73)
@@ -33,13 +33,16 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (NoSuchElementException, TimeoutException,
                                         NoSuchWindowException, WebDriverException)
 
-CHROMEDRIVER_PATH = os.path.join(os.path.dirname(__file__), "chromedriver-win64", "chromedriver.exe")
-EXTENSION_PATH = os.path.abspath(".")
-CFT_DIR = os.path.join(os.path.dirname(__file__), "chrome_for_testing")
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.join(_SCRIPT_DIR, "..")
+
+CHROMEDRIVER_PATH = os.path.join(_PROJECT_ROOT, "chromedriver-win64", "chromedriver.exe")
+EXTENSION_PATH = _PROJECT_ROOT
+CFT_DIR = os.path.join(_PROJECT_ROOT, "chrome_for_testing")
 CFT_EXE = os.path.join(CFT_DIR, "chrome-win64", "chrome.exe")
-TEMP_PROFILE_DIR = os.path.join(os.path.dirname(__file__), "perfil_temporario")
-PROGRESS_FILE = os.path.join(os.path.dirname(__file__), "simulacao_progresso.json")
-EXT_ID_FILE = os.path.join(os.path.dirname(__file__), "extension_id.txt")
+TEMP_PROFILE_DIR = os.path.join(_PROJECT_ROOT, "perfil_temporario")
+PROGRESS_FILE = os.path.join(_PROJECT_ROOT, "simulacao_progresso.json")
+EXT_ID_FILE = os.path.join(_PROJECT_ROOT, "extension_id.txt")
 
 parser = argparse.ArgumentParser(description="Simulador NAVINCLUD")
 parser.add_argument("--fast", action="store_true", help="Reacoes rapidas (0.5-2s)")

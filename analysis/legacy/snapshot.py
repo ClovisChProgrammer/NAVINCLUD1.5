@@ -11,10 +11,12 @@ import subprocess
 import sys
 from datetime import datetime
 
-SNAPSHOT_DIR = "snapshots"
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.join(_SCRIPT_DIR, "..", "..")
+SNAPSHOT_DIR = os.path.join(_PROJECT_ROOT, "artifacts", "snapshots")
 INDEX_FILE = os.path.join(SNAPSHOT_DIR, "snapshot_index.json")
 MAX_SNAPSHOTS = 5
-GIT_DIR = os.path.dirname(os.path.abspath(__file__))
+GIT_DIR = _PROJECT_ROOT
 
 
 def _git(*args):
