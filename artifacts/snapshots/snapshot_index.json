@@ -2,17 +2,16 @@
   "max_snapshots": 5,
   "entries": [
     {
-      "id": 3,
-      "timestamp": "2026-05-22 10:35:52",
-      "commit_hash": "[main 5266c8e] [SNAPSHOT] 2026-05-22 10:35:52 | MARCO: builds 1-3 concluidos. popup stray fix + preTest clear + recalibrar/retake + export seguranca 3 etapas + contador + backup DADOS_EXTRAIDOS\n 6 files changed, 198 insertions(+), 12 deletions(-)",
-      "message": "MARCO: builds 1-3 concluidos. popup stray fix + preTest clear + recalibrar/retake + export seguranca 3 etapas + contador + backup DADOS_EXTRAIDOS",
+      "id": 7,
+      "timestamp": "2026-06-23 16:10:23",
+      "commit_hash": "[main 58d028f] [SNAPSHOT] 2026-06-23 16:10:23 | PRE: docs TCC + gh-pages - antes de alterar logo, cards, disclaimer e recomendacoes eticas\n 5 files changed, 1119 insertions(+)",
+      "message": "PRE: docs TCC + gh-pages - antes de alterar logo, cards, disclaimer e recomendacoes eticas",
       "modified_files": [
-        "manifest.json",
-        "popup.html",
-        "popup.js",
-        "snapshots/snapshot_index.json",
-        "wizard.html",
-        "wizard.js"
+        "docs/tcc/armazenamento_dados.md",
+        "docs/tcc/embasamento_cientifico.md",
+        "docs/tcc/filtro_sobreposicao.md",
+        "docs/tcc/fluxo_completo.md",
+        "docs/tcc/manual_tecnico_defesa.md"
       ]
     },
     {
