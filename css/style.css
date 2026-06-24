@@ -371,18 +371,18 @@ li {
   margin-top: 1.5rem;
 }
 
-.screenshot-placeholder {
-  background: var(--color-bg-alt);
-  border: 2px dashed var(--color-border);
+.screenshot-img {
+  width: 100%;
+  height: auto;
   border-radius: var(--border-radius);
-  aspect-ratio: 16 / 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-secondary);
-  font-size: 0.875rem;
-  text-align: center;
-  padding: 1rem;
+  border: 2px solid var(--color-border);
+  display: block;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.screenshot-img:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  transform: scale(1.02);
 }
 
 .content-page {
