@@ -250,28 +250,19 @@ document.addEventListener('DOMContentLoaded', function() {
             comfortLevel: ''
           }, finalSettings);
 
-          var testKey = 'test_' + currentTestEntry.testId;
           var toSave = {};
-          toSave[testKey] = currentTestEntry;
+          toSave['lastTestResult'] = currentTestEntry;
 
-          chrome.storage.local.get(['testHistoryIds'], function(res) {
-            var ids = res.testHistoryIds || [];
-            ids.push(testKey);
-            toSave['testHistoryIds'] = ids;
-
-            chrome.storage.local.set(toSave, function() {
-              chrome.storage.local.set({ 'activeExperienceTestKey': testKey }, function() {
-                chrome.storage.local.set({ navIncludSettings: finalSettings }, function() {
-                  chrome.windows.create({
-                    url: 'experience.html',
-                    type: 'popup',
-                    width: 600,
-                    height: 700
-                  }, function() {
-                    chrome.windows.getCurrent(function(win) {
-                      chrome.windows.remove(win.id);
-                    });
-                  });
+          chrome.storage.local.set(toSave, function() {
+            chrome.storage.local.set({ navIncludSettings: finalSettings }, function() {
+              chrome.windows.create({
+                url: 'experience.html',
+                type: 'popup',
+                width: 600,
+                height: 700
+              }, function() {
+                chrome.windows.getCurrent(function(win) {
+                  chrome.windows.remove(win.id);
                 });
               });
             });
@@ -372,17 +363,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function saveTestResult(testType, extraData) {
     var testEntry = buildTestEntry(testType, extraData, null);
-
-    var testKey = 'test_' + testEntry.testId;
-    chrome.storage.local.get(['testHistoryIds'], function(res) {
-      var ids = res.testHistoryIds || [];
-      ids.push(testKey);
-      var toSave = {};
-      toSave[testKey] = testEntry;
-      toSave['testHistoryIds'] = ids;
-      chrome.storage.local.set(toSave, function() {
-        console.log('Teste salvo com chave:', testKey, 'Total no historico:', ids.length);
-      });
+    chrome.storage.local.set({ lastTestResult: testEntry }, function() {
+      console.log('Ultimo teste salvo.');
     });
   }
 

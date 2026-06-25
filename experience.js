@@ -86,27 +86,16 @@ document.addEventListener('DOMContentLoaded', function() {
       comfortLevel: comfort.value
     };
 
-    chrome.storage.local.get(['activeExperienceTestKey'], function(res) {
-      var testKey = res.activeExperienceTestKey;
-      if (!testKey) {
-        alert('Erro: referencia do teste nao encontrada.');
+    chrome.storage.local.get(['lastTestResult'], function(items) {
+      var testEntry = items.lastTestResult;
+      if (!testEntry) {
+        alert('Erro: dados do teste nao encontrados.');
         return;
       }
 
-      chrome.storage.local.get([testKey], function(items) {
-        var testEntry = items[testKey];
-        if (!testEntry) {
-          alert('Erro: dados do teste nao encontrados.');
-          return;
-        }
-
-        testEntry.experiencePostTest = experienceData;
-        var toSave = {};
-        toSave[testKey] = testEntry;
-
-        chrome.storage.local.set(toSave, function() {
-          showThankYou();
-        });
+      testEntry.experiencePostTest = experienceData;
+      chrome.storage.local.set({ lastTestResult: testEntry }, function() {
+        showThankYou();
       });
     });
   });
