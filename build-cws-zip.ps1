@@ -2,7 +2,10 @@ $ErrorActionPreference = 'Stop'
 
 $src = Get-Location
 $dist = Join-Path $src "_cws_build"
-$zip = Join-Path $src "navinclud-cws.zip"
+$artifactsDir = Join-Path $src "artifacts"
+$zip = Join-Path $artifactsDir "navinclud-cws.zip"
+
+if (-not (Test-Path $artifactsDir)) { New-Item -ItemType Directory -Path $artifactsDir | Out-Null }
 
 if (Test-Path $dist) { Remove-Item -Recurse -Force $dist }
 New-Item -ItemType Directory -Path $dist | Out-Null
