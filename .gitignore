@@ -71,6 +71,9 @@ consultas_salvas/
 # CWS build artifact
 artifacts/navinclud-cws.zip
 
+# Inactive files (moved out of extension root)
+INATIVOS/
+
 # Exportacoes de dados agregados
 export/
 stats_output/

@@ -16,17 +16,9 @@
     #progress-fill { height: 100%; background: #0072b2; width: 0%; transition: width 0.3s; }
     .wizard-btn { padding: 12px 24px; background: #0072b2; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; }
     .wizard-btn:hover { background: #005a8c; }
-    .form-group { margin: 15px 0; width: 100%; text-align: left; }
-    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-    .form-group select, .form-group input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-    .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
-    .checkbox-group label { display: flex; align-items: center; gap: 5px; font-weight: normal; }
     #timer { font-size: 24px; font-weight: bold; color: #28a745; margin: 10px 0; }
     #timer.warning { color: #ff6600; }
     #timer.critical { color: #ff0000; }
-    .radio-group { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
-    .radio-group label { display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; }
-    textarea { width: 100%; min-height: 60px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; box-sizing: border-box; }
     .timer-info { background: #e8f5e9; border-left: 4px solid #28a745; padding: 12px; margin: 12px 0; text-align: left; font-size: 13px; line-height: 1.5; border-radius: 4px; }
     .timer-info .legend { display: flex; gap: 12px; margin-top: 8px; font-weight: bold; }
     .timer-info .legend span { padding: 2px 8px; border-radius: 4px; color: white; }
@@ -38,98 +30,31 @@
 <body>
   <div id="progress-bar"><div id="progress-fill"></div></div>
 
-  <!-- Tela 1: Pre-Teste -->
-  <div id="pre-test-screen" class="test-card active">
-    <h2 class="app-title">INFORMACOES INICIAIS</h2>
-    <p>Estas informacoes sao usadas apenas para fins estatisticos.</p>
-    <div class="form-group">
-      <label>Qual e o seu sexo de nascimento?</label>
-      <select id="preSexo">
-        <option value="">Selecione...</option>
-        <option value="Masculino">Masculino</option>
-        <option value="Feminino">Feminino</option>
-        <option value="Outro">Outro</option>
-        <option value="Prefiro nao responder">Prefiro nao responder</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Qual a sua idade?</label>
-      <input type="number" id="preIdade" min="5" max="100" placeholder="Ex: 25">
-    </div>
-    <div class="form-group">
-      <label>Qual sala e turma voce pertence?</label>
-      <input type="text" id="preTurma" placeholder="Ex: 3A, 2B...">
-    </div>
+  <!-- Tela 1: Quiz (18 placas) -->
+  <div id="quiz-container" class="test-card active">
+    <div id="timer">0s</div>
+    <img id="plate-display" class="plate-img" src="">
     <div class="timer-info">
-      <strong>Informacao sobre o teste:</strong><br>
-      Cada uma das 18 placas tem um tempo maximo de <strong>15 segundos</strong> (contagem progressiva) para responder. Apos 15 segundos, a placa muda automaticamente.
+      <strong>Sobre o teste:</strong><br>
+      Cada uma das 18 placas tem um tempo máximo de <strong>15 segundos</strong> para responder. Após 15 segundos, a placa muda automaticamente.
       <div class="legend">
-        <span class="t-green">0 a 5s: Boa reacao</span>
+        <span class="t-green">0 a 5s: Boa reação</span>
         <span class="t-orange">6 a 10s: Pouca dificuldade</span>
         <span class="t-red">11 a 15s: Dificuldade</span>
       </div>
     </div>
-    <button id="pre-test-btn" class="wizard-btn" style="width: 200px;">INICIAR TESTE</button>
-  </div>
-
-  <!-- Tela 2: Quiz (18 placas) -->
-  <div id="quiz-container" class="test-card">
-    <div id="timer">0s</div>
-    <img id="plate-display" class="plate-img" src="">
-    <p>Que numero voce identifica na imagem?</p>
+    <p>Que número você identifica na imagem?</p>
     <div id="options-container" class="options-grid"></div>
   </div>
 
-  <!-- Tela 3: Pergunta O que achou do teste? -->
-  <div id="perception-screen" class="test-card">
-    <h2 class="app-title">O QUE ACHOU DO TESTE?</h2>
-    <p>Marque todas as opcoes que se aplicam (obrigatorio):</p>
-    <div class="checkbox-group">
-      <label><input type="checkbox" name="testPerception" value="Facil"> Facil</label>
-      <label><input type="checkbox" name="testPerception" value="Dificil"> Dificil</label>
-      <label><input type="checkbox" name="testPerception" value="Interessante"> Interessante</label>
-      <label><input type="checkbox" name="testPerception" value="Divertido"> Divertido</label>
-      <label><input type="checkbox" name="testPerception" value="Estressante"> Estressante</label>
-      <label><input type="checkbox" name="testPerception" value="Informativo"> Informativo</label>
-    </div>
-    <button id="perception-btn" class="wizard-btn">CONTINUAR</button>
-  </div>
-
-  <!-- Tela 4: Questionario Pos-Teste Normal (>=90% corretas) -->
-  <div id="normal-post-screen" class="test-card">
-    <h2 class="app-title">QUESTIONARIO</h2>
-    <div class="form-group">
-      <label>Voce ja havia feito este teste antes?</label>
-      <div class="radio-group">
-        <label><input type="radio" name="alreadyTaken" value="Sim"> Sim</label>
-        <label><input type="radio" name="alreadyTaken" value="Nao"> Nao</label>
-      </div>
-    </div>
-      <button id="normal-post-btn" class="wizard-btn">GRAVAR E CONTINUAR</button>
-  </div>
-
-  <!-- Tela 5: Parabens - Visao Normal -->
-  <div id="congrats-screen" class="test-card">
-    <h2 class="app-title">PARABENS!</h2>
-    <div id="congrats-text" style="margin: 30px 0; font-size: 18px; line-height: 1.5;"></div>
-    <button id="new-test-btn" class="wizard-btn">NOVO TESTE</button>
-  </div>
-
-  <!-- Tela 6: Convite para Experiencia Deficiente (<90% corretas, 1 tipo) -->
-  <div id="experience-invite-screen" class="test-card">
-    <h2 class="app-title">EXPERIENCIA NAVINCLUD</h2>
-    <div id="invite-text" style="margin: 20px 0; font-size: 16px; line-height: 1.5;"></div>
-    <p>Voce sera convidado a navegar por 2 minutos com o filtro ativado em paginas como Youtube e Google Images.</p>
-    <button id="start-experience-btn" class="wizard-btn" style="width: 200px;">INICIAR</button>
-  </div>
-
-  <!-- Tela 7: Resultados e Agradecimento -->
+  <!-- Tela 2: Resultado -->
   <div id="results-screen" class="test-card">
     <h2 class="app-title">RESULTADO</h2>
     <div id="result-text" style="margin: 30px 0; font-size: 18px; line-height: 1.5;"></div>
-    <button id="apply-wizard" class="wizard-btn">APLICAR E ATIVAR AGORA</button>
-    <button id="recalibrate-btn" class="wizard-btn" style="margin-top:10px; background:#d55e00;">🎨 RECALIBRAR MONITOR</button>
-    <button id="retake-test-btn" class="wizard-btn" style="margin-top:10px;">🔄 REFAZER TESTE</button>
+    <button id="apply-wizard" class="wizard-btn" style="display:none;">APLICAR FILTRO</button>
+    <button id="negativo-close-btn" class="wizard-btn" style="display:none;">FECHAR</button>
+    <button id="recalibrate-btn" class="wizard-btn" style="margin-top:10px; display:none; background:#d55e00;">🎨 RECALIBRAR MONITOR</button>
+    <button id="retake-test-btn" class="wizard-btn" style="margin-top:10px; display:none;">🔄 REFAZER TESTE</button>
   </div>
 
   <div style="text-align:center; margin-top:15px; padding:8px 0; border-top:1px solid #eee;">

@@ -3,7 +3,7 @@
   "name": "NAVINCLUD - Acessibilidade Cromática",
   "version": "1.5",
   "description": "Filtros dinâmicos para Daltonismo e Acromatopsia.",
-  "homepage_url": "https://clovischprogrammer.github.io/Navinclud2026TCC/",
+  "homepage_url": "https://clovischprogrammer.github.io/Navinclud1.5/",
   "permissions": ["storage"],
   "host_permissions": ["http://*/*", "https://*/*"],
   "icons": {
@@ -26,7 +26,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["images/*.webp", "wizard.html", "calibrate.html", "experience.html", "calibrate.js", "experience.js"],
+      "resources": ["images/*.webp", "wizard.html", "calibrate.html", "calibrate.js"],
       "matches": ["http://*/*", "https://*/*"]
     }
   ]

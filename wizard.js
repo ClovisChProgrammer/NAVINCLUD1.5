@@ -38,11 +38,7 @@ let timeouts = {
 let plateStartTime = 0;
 let timerInterval = null;
 let reactionTimes = [];
-let preTestData = { sexo: '', idade: '', turma: '' };
-let scorePoints = {};
-PLATES.forEach(function(p) { scorePoints[p.type] = 0; });
-let testPerception = [];
-let currentTestEntry = null;
+let pendingFilterSettings = null;
 
 function getParentType(type) {
   if (type.startsWith('protan')) return 'protan';
@@ -58,19 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var progressFill = document.getElementById('progress-fill');
   var timerDisplay = document.getElementById('timer');
 
-  // Pre-teste
-  document.getElementById('pre-test-btn').onclick = function() {
-    var sexo = document.getElementById('preSexo').value;
-    var idade = document.getElementById('preIdade').value;
-    var turma = document.getElementById('preTurma').value.trim();
-    if (!sexo) { alert('Por favor, selecione seu sexo.'); return; }
-    if (!idade || parseInt(idade) < 5 || parseInt(idade) > 100) { alert('Por favor, informe uma idade valida (5 a 100).'); return; }
-    if (!turma) { alert('Por favor, informe sua sala e turma.'); return; }
-    preTestData = { sexo: sexo, idade: parseInt(idade), turma: turma };
-    document.getElementById('pre-test-screen').classList.remove('active');
-    document.getElementById('quiz-container').classList.add('active');
-    renderStep();
-  };
+  renderStep();
 
   function resetTestState() {
     currentStep = 0;
@@ -90,24 +74,14 @@ document.addEventListener('DOMContentLoaded', function() {
       control: 0
     };
     reactionTimes = [];
-    scorePoints = {};
-    PLATES.forEach(function(p) { scorePoints[p.type] = 0; });
-    testPerception = [];
-    currentTestEntry = null;
-    preTestData = { sexo: '', idade: '', turma: '' };
-    var sexoEl = document.getElementById('preSexo');
-    var idadeEl = document.getElementById('preIdade');
-    var turmaEl = document.getElementById('preTurma');
-    if (sexoEl) sexoEl.value = '';
-    if (idadeEl) idadeEl.value = '';
-    if (turmaEl) turmaEl.value = '';
+    pendingFilterSettings = null;
     if (progressFill) progressFill.style.width = '0%';
   }
 
   function renderStep() {
     if (currentStep >= PLATES.length) {
       clearInterval(timerInterval);
-      showPerceptionQuestion();
+      showResults();
       return;
     }
     var plate = PLATES[currentStep];
@@ -143,7 +117,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }, 1000);
 
-    // Randomizar ordem das opções (Fisher-Yates shuffle)
     var shuffledOptions = plate.options.slice();
     for (var i = shuffledOptions.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -161,16 +134,10 @@ document.addEventListener('DOMContentLoaded', function() {
         var reactionTime = Date.now() - plateStartTime;
         reactionTimes.push(reactionTime);
 
-        var timeTaken = reactionTime / 1000;
         if (String(opt) !== String(plate.correct)) {
           errors[plate.type]++;
         } else {
           correctCount++;
-          if (timeTaken <= 5) {
-            scorePoints[plate.type] += 1;
-          } else if (timeTaken > 5 && timeTaken <= 10) {
-            scorePoints[plate.type] += 0.5;
-          }
         }
 
         currentStep++;
@@ -181,129 +148,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  function showPerceptionQuestion() {
+  function showResults() {
     document.getElementById('quiz-container').classList.remove('active');
-    document.getElementById('perception-screen').classList.add('active');
-  }
-
-  // Handler para "O que achou do teste?"
-  document.getElementById('perception-btn').onclick = function() {
-    var checked = Array.from(document.querySelectorAll('input[name="testPerception"]:checked'));
-    if (checked.length === 0) {
-      alert('Por favor, marque pelo menos uma opcao.');
-      return;
-    }
-    testPerception = checked.map(function(el) { return el.value; });
-
-    document.getElementById('perception-screen').classList.remove('active');
+    document.getElementById('results-screen').classList.add('active');
 
     var correctPercent = (correctCount / 18) * 100;
 
     if (errors.control > 0) {
-      document.getElementById('results-screen').classList.add('active');
       document.getElementById('result-text').innerHTML =
-        '<p style="color:red;">Erro em placas de controle - calibracao de monitor incorreta.</p>' +
-        '<p>Por favor, recalibre seu monitor usando a pagina de calibracao e refaca o teste.</p>';
+        '<p style="color:red; font-weight:bold;">ERRO DE CALIBRAÇÃO</p>' +
+        '<p>Erro em placas de controle - calibração de monitor incorreta.</p>' +
+        '<p>Por favor, recalibre seu monitor usando a página de calibração e refaça o teste.</p>';
       document.getElementById('apply-wizard').style.display = 'none';
+      document.getElementById('negativo-close-btn').style.display = 'none';
+      document.getElementById('recalibrate-btn').style.display = '';
+      document.getElementById('retake-test-btn').style.display = '';
       return;
     }
 
     if (correctPercent >= 90) {
-      document.getElementById('normal-post-screen').classList.add('active');
-    } else {
-      var parentErrors = {};
-      Object.keys(errors).forEach(function(k) {
-        if (k !== 'control' && errors[k] > 0) {
-          var parent = getParentType(k);
-          parentErrors[parent] = (parentErrors[parent] || 0) + errors[k];
-        }
-      });
-
-      var defectTypes = Object.keys(parentErrors).filter(function(k) { return parentErrors[k] > 0; });
-
-      if (defectTypes.length === 1) {
-        var defectType = defectTypes[0];
-        var nopiaSuffix = (defectType === 'achromat') ? 'opsia' : 'opia';
-        var filterType = defectType + nopiaSuffix;
-        var intensity = 100, shift = 0.5;
-
-        var maliaSuffix = 'omaly';
-        var maliaErrors = errors[defectType + maliaSuffix] || 0;
-        var nopiaErrors = errors[defectType + nopiaSuffix] || 0;
-        if (maliaErrors > 0 && nopiaErrors === 0) {
-          filterType = defectType + maliaSuffix;
-          intensity = 80; shift = 0.6;
-        }
-
-        document.getElementById('invite-text').innerHTML =
-          'De acordo com seu teste, ele esta apontando possivel <strong>' + filterType.toUpperCase() + '</strong>.<br>' +
-          'Por isso convidamos voce a fazer uma experiencia de 2 minutos apenas.';
-        document.getElementById('experience-invite-screen').classList.add('active');
-
-        document.getElementById('start-experience-btn').onclick = function() {
-          var finalSettings = { type: filterType, intensity: intensity, shift: shift, enabled: true };
-
-          currentTestEntry = buildTestEntry('deficient', {
-            visualImprovement: '',
-            navigationEase: '',
-            wouldRecommend: '',
-            comfortLevel: ''
-          }, finalSettings);
-
-          var toSave = {};
-          toSave['lastTestResult'] = currentTestEntry;
-
-          chrome.storage.local.set(toSave, function() {
-            chrome.storage.local.set({ navIncludSettings: finalSettings }, function() {
-              chrome.windows.create({
-                url: 'experience.html',
-                type: 'popup',
-                width: 600,
-                height: 700
-              }, function() {
-                chrome.windows.getCurrent(function(win) {
-                  chrome.windows.remove(win.id);
-                });
-              });
-            });
-          });
-        };
-      } else {
-        document.getElementById('results-screen').classList.add('active');
-        document.getElementById('result-text').innerHTML =
-          '<p style="color:orange;">Erros em multiplos tipos de daltonismo detectados.</p>' +
-          '<p>Recomendamos recalibrar o monitor e refazer o teste.</p>';
-        document.getElementById('apply-wizard').style.display = 'none';
-      }
+      document.getElementById('result-text').innerHTML =
+        '<p style="color:green; font-size:20px; font-weight:bold;">✓ TESTE NEGATIVO</p>' +
+        '<p>Você consegue discernir as cores muito bem. Seu teste não indicou nenhuma dificuldade significativa de visão de cores.</p>';
+      document.getElementById('apply-wizard').style.display = 'none';
+      document.getElementById('negativo-close-btn').style.display = '';
+      document.getElementById('recalibrate-btn').style.display = 'none';
+      document.getElementById('retake-test-btn').style.display = 'none';
+      return;
     }
-  };
-
-  // Botao NOVO TESTE (visao normal >=90%)
-  document.getElementById('new-test-btn').onclick = function() {
-    resetTestState();
-    document.getElementById('congrats-screen').classList.remove('active');
-    document.getElementById('pre-test-screen').classList.add('active');
-  };
-
-  // Botao finalizar normal (questionario "ja fez antes?")
-  document.getElementById('normal-post-btn').onclick = function() {
-    var alreadyTaken = document.querySelector('input[name="alreadyTaken"]:checked');
-    if (!alreadyTaken) { alert('Por favor, responda se ja fez este teste antes.'); return; }
-
-    saveTestResult('normal', {
-      alreadyTaken: alreadyTaken.value
-    });
-
-    document.getElementById('normal-post-screen').classList.remove('active');
-    document.getElementById('congrats-screen').classList.add('active');
-    document.getElementById('congrats-text').innerHTML =
-      'Obrigado por participar da pesquisa de TCC.<br><br>' +
-      'Seus dados foram gravados com sucesso.';
-    document.getElementById('new-test-btn').textContent = 'NOVO TESTE';
-  };
-
-  function buildTestEntry(testType, extraData, filterSettings) {
-    var correctPercent = (correctCount / 18) * 100;
 
     var parentErrors = {};
     Object.keys(errors).forEach(function(k) {
@@ -313,63 +185,53 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    var detectedDefect = 'none';
-    if (Object.keys(parentErrors).length === 1) {
-      var p = Object.keys(parentErrors)[0];
-      var nopiaSuffix = (p === 'achromat') ? 'opsia' : 'opia';
-      var hasOmalia = errors[p + 'omaly'] > 0;
-      detectedDefect = p + (hasOmalia ? 'omaly' : nopiaSuffix);
-    }
+    var defectTypes = Object.keys(parentErrors).filter(function(k) { return parentErrors[k] > 0; });
 
-    var testEntry = {
-      testId: crypto.randomUUID(),
-      timestamp: new Date().toISOString(),
-      terminalId: 'navinclud-' + crypto.randomUUID().slice(0,8),
-      preTest: preTestData,
-      testResults: {
-        totalPlates: 18,
-        correctCount: correctCount,
-        correctPercent: correctPercent,
-        avgReactionTimeMs: reactionTimes.length > 0 ? Math.round(reactionTimes.reduce(function(a,b) { return a+b; }, 0) / reactionTimes.length) : 0,
-        errorsByType: errors,
-        scorePointsByType: scorePoints,
-        detectedDefect: detectedDefect,
-        controlPlateErrors: errors.control > 0,
-        testPerception: testPerception
+    if (defectTypes.length === 1) {
+      var defectType = defectTypes[0];
+      var nopiaSuffix = (defectType === 'achromat') ? 'opsia' : 'opia';
+      var filterType = defectType + nopiaSuffix;
+      var intensity = 100, shift = 0.5;
+
+      var maliaErrors = errors[defectType + 'omaly'] || 0;
+      var nopiaErrors = errors[defectType + nopiaSuffix] || 0;
+      if (maliaErrors > 0 && nopiaErrors === 0) {
+        filterType = defectType + 'omaly';
+        intensity = 80; shift = 0.6;
       }
-    };
 
-    if (testType === 'normal') {
-      testEntry.normalPostTest = {
-        alreadyTaken: extraData ? extraData.alreadyTaken : ''
-      };
+      document.getElementById('result-text').innerHTML =
+        '<p style="color:#d55e00; font-size:20px; font-weight:bold;">TESTE POSITIVO</p>' +
+        '<p>Foi identificada uma provável dificuldade em discernir determinadas cores, podendo ser classificado como provável <strong>' + filterType.toUpperCase() + '</strong>.</p>' +
+        '<p>Ao clicar no botão abaixo, a extensão aplicará as configurações mais próximas do resultado do seu teste. A partir de agora, qualquer página que você abrir exibirá o filtro automaticamente. Você também pode fazer ajustes finos nos controles de "Intensidade" e "Ajuste de Shift" no popup da extensão.</p>';
+
+      document.getElementById('apply-wizard').style.display = '';
+      document.getElementById('apply-wizard').textContent = 'APLICAR FILTRO';
+      document.getElementById('negativo-close-btn').style.display = 'none';
+      document.getElementById('recalibrate-btn').style.display = 'none';
+      document.getElementById('retake-test-btn').style.display = 'none';
+
+      pendingFilterSettings = { type: filterType, intensity: intensity, shift: shift, enabled: true };
     } else {
-      testEntry.experiencePostTest = {
-        visualImprovement: '',
-        navigationEase: '',
-        wouldRecommend: '',
-        comfortLevel: ''
-      };
-      testEntry.appliedFilter = {
-        type: filterSettings.type,
-        intensity: filterSettings.intensity,
-        shift: filterSettings.shift,
-        enabled: filterSettings.enabled
-      };
+      document.getElementById('result-text').innerHTML =
+        '<p style="color:orange; font-weight:bold;">MÚLTIPLAS DEFICIÊNCIAS DETECTADAS</p>' +
+        '<p>Foram detectados erros em múltiplos tipos de placas. Recomendamos recalibrar o monitor e refazer o teste para um resultado mais preciso.</p>';
+      document.getElementById('apply-wizard').style.display = 'none';
+      document.getElementById('negativo-close-btn').style.display = 'none';
+      document.getElementById('recalibrate-btn').style.display = '';
+      document.getElementById('retake-test-btn').style.display = '';
     }
-
-    return testEntry;
-  }
-
-  function saveTestResult(testType, extraData) {
-    var testEntry = buildTestEntry(testType, extraData, null);
-    chrome.storage.local.set({ lastTestResult: testEntry }, function() {
-      console.log('Ultimo teste salvo.');
-    });
   }
 
   document.getElementById('apply-wizard').onclick = function() {
-    setTimeout(function() { window.close(); }, 300);
+    if (pendingFilterSettings) {
+      chrome.storage.local.set({ navIncludSettings: pendingFilterSettings });
+    }
+    window.close();
+  };
+
+  document.getElementById('negativo-close-btn').onclick = function() {
+    window.close();
   };
 
   document.getElementById('recalibrate-btn').onclick = function() {
@@ -383,6 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('retake-test-btn').onclick = function() {
     resetTestState();
     document.getElementById('results-screen').classList.remove('active');
-    document.getElementById('pre-test-screen').classList.add('active');
+    document.getElementById('quiz-container').classList.add('active');
+    renderStep();
   };
 });

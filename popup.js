@@ -46,32 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
     el.addEventListener('input', saveAndBroadcast);
   });
 
-  chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    if (message.action === 'experienceTick') {
-      var mins = Math.floor(message.timeLeft / 60);
-      var secs = message.timeLeft % 60;
-      var display = mins + ':' + (secs < 10 ? '0' + secs : secs);
-      var timerDisplay = document.getElementById('timer-display');
-      if (timerDisplay) timerDisplay.textContent = display;
-
-      var section = document.getElementById('test-active-section');
-      if (section) section.style.display = 'block';
-    }
-
-    if (message.action === 'experienceEnded') {
-      var section = document.getElementById('test-active-section');
-      if (section) section.style.display = 'none';
-    }
-  });
-
-  var exitTestBtn = document.getElementById('exitTestBtn');
-  if (exitTestBtn) {
-    exitTestBtn.onclick = function() {
-      chrome.runtime.sendMessage({ action: 'exitExperience' });
-      var section = document.getElementById('test-active-section');
-      if (section) section.style.display = 'none';
-    };
-  }
   
   // Drag
   elements.dragHandle.addEventListener('mousedown', function(e) {
